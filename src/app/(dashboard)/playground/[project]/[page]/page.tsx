@@ -22,7 +22,8 @@ export default function Home() {
         </div>
       </div>
 
-      <div> this is project {'>'} page editor: should contain a sidebar, topbar and body editor</div>
+      <div> this is project {'>'} page editor: should  contain a sidebar, topbar and body editor</div>
+
     </main>
   )
 }
