@@ -39,9 +39,7 @@ const inputVariants = cva(
 export interface InputProps
  extends React.InputHTMLAttributes<HTMLInputElement>,
   VariantProps<typeof inputVariants> {
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
  suffix?: any;
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
  prefix?: any;
  clearable?: boolean;
 }
@@ -68,7 +66,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
      writable: false,
      value: { value: "", ...props },
     });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     props.onChange(event as any);
    }
   };
