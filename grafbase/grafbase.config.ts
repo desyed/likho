@@ -12,20 +12,34 @@ import { g, auth, config } from '@grafbase/sdk'
 // Define Data Models
 // https://grafbase.com/docs/database
 
+const postTypeEnum = g.enum('Type', ['page', 'blog']);
+
+// @ts-ignore
 const post = g.model('Post', {
   title: g.string(),
   slug: g.string().unique(),
   content: g.string().optional(),
+  type: g.enumRef(postTypeEnum).default('page'),
   publishedAt: g.datetime().optional(),
   comments: g.relation(() => comment).optional().list().optional(),
   likes: g.int().default(0),
   tags: g.string().optional().list().length({ max: 5 }),
-  author: g.relation(() => user).optional()
-}).search()
+  author: g.relation(() => user).optional(),
+  project: g.relation(() => project).optional()
+}).search().auth((rules) => {
+  rules.public().read()
+})
 
+// @ts-ignore
 const project = g.model('Project', {
-  title: g.string().length({ min: 3}),
-  description: g.string()
+  name: g.string().length({ min: 3}).search(),
+  liveSiteUrl: g.url().optional(),
+  subdomain: g.relation(() => Subdomain),
+  posts: g.relation(post).optional().list().optional(),
+  createdBy: g.relation(() => user),
+}).search().auth((rules) => {
+  rules.public().read()
+  rules.private().create().delete().update()
 })
 
 const comment = g.model('Comment', {
@@ -34,29 +48,39 @@ const comment = g.model('Comment', {
   likes: g.int().default(0),
   author: g.relation(() => user).optional()
 })
+// @ts-ignore
 const user = g.model('User', {
   name: g.string(),
-  email: g.email().optional(),
-  avatarUrl: g.url(),
-  description: g.string(),
-  posts: g.relation(post).optional().list(),
-  comments: g.relation(comment).optional().list(),
-  projects: g.relation(project).optional().list()
-  // Extend models with resolvers
-  // https://grafbase.com/docs/edge-gateway/resolvers
-  // gravatar: g.url().resolver('user/gravatar')
+  email: g.email().unique(),
+  avatarUrl: g.url().optional(),
+  description: g.string().optional(),
+  posts: g.relation(post).optional().list().optional(),
+  comments: g.relation(comment).optional().list().optional(),
+  projects: g.relation(project).optional().list().optional()
+}).search().auth((rules) => {
+  rules.public().read()
 })
 
-// write project model
+// @ts-ignore
+const Subdomain = g.model('Subdomain', {
+    name: g.string().unique(),
+    project: g.relation(project),
+    user: g.relation(user)
+}).search().auth((rules) => {
+    rules.public().read()
+    rules.private().create().delete().update()
+})
+
+
+const jwt = auth.JWT({
+  issuer: 'grafbase',
+  secret:  g.env('NEXTAUTH_SECRET')
+})
 
 export default config({
-  schema: g
-  // Integrate Auth
-  // https://grafbase.com/docs/auth
-  // auth: {
-  //   providers: [authProvider],
-  //   rules: (rules) => {
-  //     rules.private()
-  //   }
-  // }
+  schema: g,
+  auth: {
+    providers: [jwt],
+    rules: (rules) => rules.private()
+  },
 })
