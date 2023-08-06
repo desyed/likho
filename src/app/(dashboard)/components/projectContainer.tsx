@@ -1,6 +1,32 @@
-const ProjectContainer = ({ children }: { children: React.ReactNode }) => {
+import Image from "next/image";
+import {MoreVertical, Sun} from "lucide-react";
+import {getCurrentUser} from "@/lib/session";
+
+const ProjectContainer = async ({ children }: { children: React.ReactNode }) => {
+    const session = await getCurrentUser();
     return <div className="flex-1">
-        <div className="text-right">top menu: will have buttons fullscreen, desktop view, mobileview</div>
+        <div className="flex justify-between px-5 py-2">
+            <div></div>
+            <div className="flex items-center gap-3">
+                <p className="text-xs uppercase font-light text-stone-400 "><b>Project:</b> First Project</p>
+                <p className="text-xs uppercase font-light text-stone-400 "><b>Page:</b> Current Page</p>
+                </div>
+            <div className="flex items-center gap-2">
+                <Sun width={15} className="text-stone-400"/>
+                <p className="flex items-center text-xs text-stone-400 gap-1">
+                    {session?.user && <Image
+                        src={session?.user?.image || ""}
+                        alt={session.user.name}
+                        className="dark:invert rounded-full bg-gray-300"
+                        width={15}
+                        height={15}
+                        objectFit={"cover"}
+                        priority
+                    />}
+                    {session.user.name}</p>
+                <MoreVertical width={15} className="text-stone-400"/>
+            </div>
+        </div>
         <div className="p-5 pt-0">
             { children }
         </div>

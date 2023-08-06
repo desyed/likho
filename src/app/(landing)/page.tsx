@@ -2,27 +2,11 @@ import Image from 'next/image'
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
+    <div className="flex min-h-screen flex-col items-center justify-center p-24">
 
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="/"
-          >
-            <Image
-              src="/likho.svg"
-              alt="likho Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+        <h1 className="bg-clip-text bg-gradient-to-br font-extrabold from-[#FFD89B] jsx-bbe7df302f14d4d5 leading-[1.4em] lg:leading-[1.3em] lg:text-[3.4em] lg:tracking-[0.24em] md:leading-[1.4em] md:text-4xl md:tracking-[0.6em] text-4xl text-left text-transparent to-[#19547B] tracking-[0.4em] uppercase  z-10">
+            AI Powered. Notion Styled. Multi-tenant. No-code Blogging Website Builder with  <span className={"bg-gradient-to-r from-red-500 to-orange-500 text-white px-3"}>Grafbase</span></h1>
 
-
-    </main>
+    </div>
   )
 }

@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { Editor } from "@tiptap/core";
 import { Check, Trash } from "lucide-react";
-import { Dispatch, FC, SetStateAction, useEffect, useRef } from "react";
+import {Dispatch, FC, FormEvent, SetStateAction, useEffect, useRef} from "react";
 
 interface LinkSelectorProps {
   editor: Editor;
@@ -40,9 +40,10 @@ export const LinkSelector: FC<LinkSelectorProps> = ({
       </button>
       {isOpen && (
         <form
-          onSubmit={(e) => {
+          onSubmit={(e ) => {
             e.preventDefault();
-            const input = e.target[0] as HTMLInputElement;
+            // @ts-ignore
+              const input = e?.target[0] as HTMLInputElement;
             editor.chain().focus().setLink({ href: input.value }).run();
             setIsOpen(false);
           }}

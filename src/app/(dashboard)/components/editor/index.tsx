@@ -135,10 +135,18 @@ export default function Editor() {
       onClick={() => {
         editor?.chain().focus().run();
       }}
-      className="relative min-h-[500px] w-full max-w-screen-lg border-stone-200 bg-white p-12 px-8 sm:mb-[calc(20vh)] sm:rounded-lg sm:border sm:px-12 sm:shadow-lg"
+      className="relative min-h-[500px] mx-auto w-full max-w-screen-lg border-stone-200 bg-white p-12 px-8 sm:mb-[calc(20vh)] sm:rounded-lg sm:border sm:px-12 sm:shadow-lg"
     >
-      <div className="absolute right-5 top-5 mb-5 rounded-lg bg-stone-100 px-2 py-1 text-sm text-stone-400">
-        {saveStatus}
+      <div className="absolute w-full left-0 top-0 mb-5  bg-stone-100 text-stone-400 flex justify-between items-center">
+        <div className="pageTitle"></div>
+        <div className="bg-white cursor-pointer font-light hover:bg-gray-500 hover:text-white px-3  rounded-full text-stone-400 text-xs">
+          demo-4wd2.likho.site</div>
+        <div className="flex">
+          <div className="px-2 py-1 text-xs font-light text-stone-400">
+            {saveStatus}
+          </div>
+          <button className="hover:bg-stone-400 rounded-full  text-stone-600 text-xs px-3 hover:text-white">🚀Publish</button>
+        </div>
       </div>
       {editor && <EditorBubbleMenu editor={editor} />}
       <EditorContent editor={editor} />

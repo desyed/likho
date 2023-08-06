@@ -16,11 +16,9 @@ const data = {
 
 export default function Page() {
   return (
-    <div className=" min-h-[100vh] rounded-xl overflow-hidden border">
-        <div className="topbar-browser bg-gray-300 text-center">browser 3 dot, url</div>
         <div className="editor">
-            <Editor post={data} />
+            {/*post={data}*/}
+            <Editor  />
         </div>
-    </div>
   )
 }
