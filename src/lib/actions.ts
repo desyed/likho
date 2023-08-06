@@ -1,4 +1,5 @@
 import { GraphQLClient } from "graphql-request";
+import { customAlphabet } from "nanoid";
 
 import { createProjectMutation, createUserMutation, deleteProjectMutation, updateProjectMutation, getProjectByIdQuery, getProjectsOfUserQuery, getUserQuery, projectsQuery } from "@/graphql";
 import {ProjectForm} from "@/lib/common.types";
@@ -20,6 +21,7 @@ export const fetchToken = async () => {
 };
 
 export const uploadImage = async (imagePath: string) => {
+    console.log("uploadImage", imagePath)
     try {
         const response = await fetch(`${serverUrl}/api/upload`, {
             method: "POST",
@@ -128,3 +130,111 @@ export const getUser = (email: string) => {
     client.setHeader("x-api-key", apiKey);
     return makeGraphQLRequest(getUserQuery, { email });
 };
+
+
+const nanoid = customAlphabet(
+    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+    6,
+); // 7-character random string
+
+export const createPost = async (formData: FormData) => {
+    const title = formData.get("title") as string;
+    const content = formData.get("content") as string;
+    const image = formData.get("image") as string;
+
+    try {
+        const response = new Promise(()=> {});
+        return response;
+    } catch (error: any) {
+        if (error.code === "P2002") {
+            return {
+                error: `This title is already taken`,
+            };
+        } else {
+            return {
+                error: error.message,
+            };
+        }
+    }
+}
+
+export const getPost = async () => {
+    try {
+        const response =  setTimeout(()=> {
+            return {title: 'title', content: 'content'} ;
+        }, 1000);
+        return response ;
+    } catch (error: any) {
+        return {
+            error: error.message,
+        };
+    }
+}
+
+export const updatePost = async (id: string, data: any) => {
+
+    try {
+        const response = new Promise(()=> {});
+        return response;
+    } catch (error: any) {
+        if (error.code === "P2002") {
+            return {
+                error: `This  is already taken`,
+            };
+        } else {
+            return {
+                error: error.message,
+            };
+        }
+    }
+}
+export const createSubDomain = async (formData: FormData) => {
+
+
+    try {
+        const response = new Promise(()=> {});
+        return response;
+    } catch (error: any) {
+        if (error.code === "P2002") {
+            return {
+                error: `This subdomain is already taken`,
+            };
+        } else {
+            return {
+                error: error.message,
+            };
+        }
+    }
+};
+//
+// export const updateSite = withSiteAuth(
+//     async (formData: FormData, site: any, key: string) => {
+//         const value = formData.get(key) as string;
+//
+//         try {
+//             const response = new Promise(()=> {});
+//             return response;
+//         } catch (error: any) {
+//             if (error.code === "P2002") {
+//                 return {
+//                     error: `This ${key} is already taken`,
+//                 };
+//             } else {
+//                 return {
+//                     error: error.message,
+//                 };
+//             }
+//         }
+//     },
+// );
+//
+// export const deleteSite = withSiteAuth(async (_: FormData, site: any) => {
+//     try {
+//         const response = new Promise(()=> {});
+//         return response;
+//     } catch (error: any) {
+//         return {
+//             error: error.message,
+//         };
+//     }
+// });

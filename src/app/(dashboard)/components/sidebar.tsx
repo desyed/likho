@@ -1,5 +1,5 @@
 const Sidebar = () => {
-    return <div>
+    return <div className="w-[200px] bg-gray-100 min-h-[100vh]">
         <div>logo</div>
         <div>
             <h4>Projects</h4>

@@ -16,8 +16,10 @@ const postTypeEnum = g.enum('Type', ['page', 'blog']);
 
 // @ts-ignore
 const post = g.model('Post', {
-  title: g.string(),
+  title: g.string().default('Write a title'),
   slug: g.string().unique(),
+  description: g.string().optional().default('Write a description'),
+  thumbnail: g.url().optional(),
   content: g.string().optional(),
   type: g.enumRef(postTypeEnum).default('page'),
   publishedAt: g.datetime().optional(),

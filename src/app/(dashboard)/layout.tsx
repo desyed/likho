@@ -1,4 +1,5 @@
 import '../globals.css'
+import "../prosemirror.css";
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import Sidebar from "@/app/(dashboard)/components/sidebar";
@@ -14,11 +15,13 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-      <Sidebar/>
-      <ProjectContainer>
-        {children}
-      </ProjectContainer>
+      <body className={`${inter.className} `}>
+      <div className="flex w-full min-h-full">
+          <Sidebar/>
+          <ProjectContainer>
+              {children}
+          </ProjectContainer>
+      </div>
       </body>
     </html>
   )
