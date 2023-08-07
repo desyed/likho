@@ -28,7 +28,9 @@ export default async function middleware(req: NextRequest) {
   // rewrites for app pages
     const session = await getToken({ req });
 
-    if(hostname.endsWith('.likho.site')){
+    if(hostname.includes("www") && (hostname !== "www.likho.site")){
+      return NextResponse.rewrite(new URL(`/subdomain`, req.url));
+    }else if(!hostname.includes("www") && (hostname !== "likho.site")){
       return NextResponse.rewrite(new URL(`/subdomain`, req.url));
     }
 
