@@ -25,6 +25,7 @@ export default async function middleware(req: NextRequest) {
   // Get the pathname of the request (e.g. /, /about, /blog/first-post)
   const path = url.pathname;
 
+
   // rewrites for app pages
     const session = await getToken({ req });
 
