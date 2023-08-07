@@ -1,13 +1,12 @@
-import LottiePlayer from "@/app/(landing)/components/LottiePlayer";
-import {Github} from "lucide-react";
-import Link from "next/link";
 import Herosection from "@/app/(landing)/components/herosection";
 import Features from "@/app/(landing)/components/Features";
 import Howitworks from "@/app/(landing)/components/howitworks";
 import Footer from "@/app/(landing)/components/footer";
 import Technologies from "@/app/(landing)/components/Technologies";
+import {headers} from "next/headers";
 
 export default function Home() {
+    console.log(headers().get('host'))
   return (
     <div className="flex min-h-screen flex-col items-center justify-center">
         {/*  hero section*/}
