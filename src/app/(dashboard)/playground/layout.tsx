@@ -1,7 +1,15 @@
-import Image from 'next/image'
+import {SessionProvider} from "next-auth/react";
+import Sidebar from "@/app/(dashboard)/components/sidebar";
+import ProjectContainer from "@/app/(dashboard)/components/projectContainer";
+
 
 export default function ProjectLayout({ children }: { children: React.ReactNode }) {
   return (
-    <>{ children }</>
+      <div className="flex w-full min-h-full">
+        <Sidebar/>
+        <ProjectContainer>
+          {children}
+        </ProjectContainer>
+      </div>
   )
 }

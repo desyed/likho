@@ -26,7 +26,6 @@ const AuthProviders = () => {
         const fetchProviders = async () => {
             const res = await getProviders();
             const token = await fetchToken();
-            console.log('token',token)
             setProviders(res);
         }
 

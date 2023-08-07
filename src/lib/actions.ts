@@ -19,6 +19,14 @@ export const fetchToken = async () => {
         throw err;
     }
 };
+export const fetchCurrentUser = async () => {
+    try {
+        const response = await fetch(`${serverUrl}/api/session`);
+        return response.json();
+    } catch (err) {
+        throw err;
+    }
+};
 
 export const uploadImage = async (imagePath: string) => {
     console.log("uploadImage", imagePath)
@@ -49,24 +57,30 @@ export const fetchAllProjects = (category?: string | null, endcursor?: string | 
     return makeGraphQLRequest(projectsQuery, { category, endcursor });
 };
 
-export const createNewProject = async (form: ProjectForm, creatorId: string, token: string) => {
-    const imageUrl = await uploadImage(form.image);
+export const createNewProject = async (form: ProjectForm) => {
+    // const imageUrl = await uploadImage(form.image);
+    const user = await fetchCurrentUser();
+    const {token} = await fetchToken();
 
-    if (imageUrl.url) {
+    // if (imageUrl.url) {
         client.setHeader("Authorization", `Bearer ${token}`);
+
+    console.log(token);
+    console.log(user)
+    return ;
 
         const variables = {
             input: {
                 ...form,
-                image: imageUrl.url,
+                code: nanoid(6),
                 createdBy: {
-                    link: creatorId
+                    link: user?.id
                 }
             }
         };
 
         return makeGraphQLRequest(createProjectMutation, variables);
-    }
+    // }
 };
 
 export const updateProject = async (form: ProjectForm, projectId: string, token: string) => {
@@ -77,15 +91,15 @@ export const updateProject = async (form: ProjectForm, projectId: string, token:
 
     let updatedForm = { ...form };
 
-    const isUploadingNewImage = isBase64DataURL(form.image);
-
-    if (isUploadingNewImage) {
-        const imageUrl = await uploadImage(form.image);
-
-        if (imageUrl.url) {
-            updatedForm = { ...updatedForm, image: imageUrl.url };
-        }
-    }
+    // const isUploadingNewImage = isBase64DataURL(form.image);
+    //
+    // if (isUploadingNewImage) {
+    //     const imageUrl = await uploadImage(form.image);
+    //
+    //     if (imageUrl.url) {
+    //         updatedForm = { ...updatedForm, image: imageUrl.url };
+    //     }
+    // }
 
     client.setHeader("Authorization", `Bearer ${token}`);
 
@@ -121,21 +135,30 @@ export const createUser = (name: string, email: string, avatarUrl?: string) => {
     return makeGraphQLRequest(createUserMutation, variables);
 };
 
-export const getUserProjects = (id: string, last?: number) => {
+export const getUserProjects = (id: string) => {
+    console.log(id)
     client.setHeader("x-api-key", apiKey);
-    return makeGraphQLRequest(getProjectsOfUserQuery, { id, last });
+    return makeGraphQLRequest(getProjectsOfUserQuery, { id: id });
 };
 
 export const getUser = (email: string) => {
     client.setHeader("x-api-key", apiKey);
     return makeGraphQLRequest(getUserQuery, { email });
 };
+export const getCurrentSession = async () => {
+    try {
+        const response = await fetch(`${serverUrl}/api/session`);
+        return response.json();
+    } catch (err) {
+        throw err;
+    }
+};
 
 
 const nanoid = customAlphabet(
     "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
     6,
-); // 7-character random string
+); // 6-character random string
 
 export const createPost = async (formData: FormData) => {
     const title = formData.get("title") as string;
@@ -143,7 +166,9 @@ export const createPost = async (formData: FormData) => {
     const image = formData.get("image") as string;
 
     try {
-        const response = new Promise(()=> {});
+        const response = new Promise((resolve, reject)=> {
+           resolve({})
+        });
         return response;
     } catch (error: any) {
         if (error.code === "P2002") {
@@ -174,7 +199,9 @@ export const getPost = async () => {
 export const updatePost = async (id: string, data: any) => {
 
     try {
-        const response = new Promise(()=> {});
+        const response = new Promise((resolve, reject)=> {
+            resolve({})
+        });
         return response;
     } catch (error: any) {
         if (error.code === "P2002") {
@@ -192,7 +219,9 @@ export const createSubDomain = async (formData: FormData) => {
 
 
     try {
-        const response = new Promise(()=> {});
+        const response = new Promise((resolve, reject)=> {
+            resolve({})
+        });
         return response;
     } catch (error: any) {
         if (error.code === "P2002") {

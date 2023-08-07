@@ -22,12 +22,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en">
       <body className={`${inter.className} `}>
-      <div className="flex w-full min-h-full">
-          <Sidebar/>
-          <ProjectContainer>
-              {children}
-          </ProjectContainer>
-      </div>
+      {children}
       </body>
     </html>
   )

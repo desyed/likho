@@ -20,7 +20,6 @@ const ProjectContainer = async ({ children }: { children: React.ReactNode }) => 
                         className="dark:invert rounded-full bg-gray-300"
                         width={15}
                         height={15}
-                        objectFit={"cover"}
                         priority
                     />}
                     {session.user.name}</p>

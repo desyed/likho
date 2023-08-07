@@ -35,8 +35,9 @@ const post = g.model('Post', {
 // @ts-ignore
 const project = g.model('Project', {
   name: g.string().length({ min: 3}).search(),
+  code: g.string().length({ min: 6, max: 6}).unique(),
   liveSiteUrl: g.url().optional(),
-  subdomain: g.relation(() => Subdomain),
+  subdomain: g.relation(() => Subdomain).optional(),
   posts: g.relation(post).optional().list().optional(),
   createdBy: g.relation(() => user),
 }).search().auth((rules) => {
@@ -66,8 +67,8 @@ const user = g.model('User', {
 // @ts-ignore
 const Subdomain = g.model('Subdomain', {
     name: g.string().unique(),
-    project: g.relation(project),
-    user: g.relation(user)
+    project: g.relation(project).optional(),
+    user: g.relation(user).optional()
 }).search().auth((rules) => {
     rules.public().read()
     rules.private().create().delete().update()

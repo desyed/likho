@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   description: 'Generate your blog site with ease. Play couple of minutes and boom!!!',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
@@ -18,8 +18,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-      <Topnav />
-      {children}</body>
+          <Topnav />
+          {children}
+      </body>
     </html>
   )
 }

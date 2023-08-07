@@ -3,12 +3,7 @@ export const createProjectMutation = `
 		projectCreate(input: $input) {
 			project {
 				id
-				title
-				description
-				createdBy {
-					email
-					name
-				}
+				name
 			}
 		}
 	}
@@ -109,25 +104,44 @@ export const getUserQuery = `
   }
 `;
 
+
 export const getProjectsOfUserQuery = `
-  query getUserProjects($id: ID!, $last: Int = 4) {
-    user(by: { id: $id }) {
-      id
-      name
-      email
-      description
-      avatarUrl
-      githubUrl
-      linkedinUrl
-      projects(last: $last) {
-        edges {
-          node {
-            id
-            title
-            image
+  query getUserProjects($id: ID!) {
+      user(by: {id: $id}) {
+        projects(first: 10) {
+          edges {
+            node {
+              name
+              liveSiteUrl
+              subdomain {
+                name
+                id
+              }
+              posts(first: 10) {
+                edges {
+                  node {
+                    title
+                    slug
+                    description
+                    thumbnail
+                    content
+                    type
+                    publishedAt
+                    likes
+                    tags
+                    id
+                  }
+                }
+              }
+              id
+            }
           }
         }
+        id
+        email
+        name
+        avatarUrl
+        description
       }
-    }
   }
 `;
