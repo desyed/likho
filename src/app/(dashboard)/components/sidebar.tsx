@@ -11,39 +11,109 @@ import {
     Twitter
 } from "lucide-react";
 import Link from "next/link";
-import {Fragment, useEffect, useState} from "react";
-import {createNewProject, getCurrentSession, getUserProjects} from "@/lib/actions";
-import {Dialog, Transition} from "@headlessui/react";
-import {Input} from "@material-tailwind/react";
-
-
-// create project
-// get pages from server
-// create page
-
+import { useEffect, useState} from "react";
+import {createNewProject, createNewPost, fetchToken, getUserProjects} from "@/lib/actions";
+import {toast} from "sonner";
+import {useParams} from "next/navigation";
+import {setItem, setToken} from "@/lib/services/storage";
+import ProjectModal from "@/app/(dashboard)/components/project-create-modal";
+import PostModal from "@/app/(dashboard)/components/post-create-modal";
+import {slugify} from "@/lib/utils";
+import {getItem} from "@/lib/services/storage";
 
 const Sidebar = () => {
-    const [projects, setProjects] = useState([]);
-    const [isProjectModalOpen, setIsProjectModalOpen] = useState(true);
+
+    const [projectFromError, setProjectFromError] = useState(false);
+    const [projectCreateLoading, setProjectCreateLoading] = useState(false);
+    const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+
+    const [pageFromError, setPageFromError] = useState(false);
+    const [pageThumbnail, setPageThumbnail] = useState<string | null>(null);
+    const [pageCreateLoading, setPageCreateLoading] = useState(false);
+    const [isPageModalOpen, setIsPageModalOpen] = useState(false);
+
+    const {project: projectCode} = useParams()
     const closeProjectModal = () => setIsProjectModalOpen(false);
+    const closePageModal = () => setIsPageModalOpen(false);
+
+    const [projects, setProjects] = useState([]);
+    const [posts, setPosts] = useState([]);
+    const [tokenInfo, setTokenInfo] = useState(null);
+
+    async function getPageInfo() {
+        const res = await fetchToken();
+
+        if(res){
+            setToken(res);
+            setTokenInfo(res);
+            const userProjects = await getUserProjects( res.id);
+            // @ts-ignore
+            setProjects(userProjects?.user?.projects?.edges ||[]);
+        }
+    }
+
+
     const projectSubmit = async (e: any) => {
         e.preventDefault();
-        // console form values
-        console.log(e.target.name.value)
+        setProjectCreateLoading(true);
         const name = e.target.name.value;
-        const res = await createNewProject(name);
-        console.log(res);
-    }
-    useEffect( () => {
 
-        async function getUser() {
-            const res = await getCurrentSession();
-            const {user: {projects: {edges: projects}}} = res?.user?.id && await getUserProjects( res.user.id);
-            setProjects(projects || []);
+        if(name){
+            setProjectFromError(false);
+            try {
+                // @ts-ignore
+                tokenInfo &&  await createNewProject(name, tokenInfo?.id, tokenInfo?.token );
+                setProjectCreateLoading(false);
+                setIsProjectModalOpen(false);
+                toast.success("Project created successfully");
+                getPageInfo();
+            }
+            catch (e) {
+                setProjectCreateLoading(false);
+                toast.error("Something went wrong");
+            }
+        }else {
+            setProjectFromError(true);
+            setProjectCreateLoading(false);
         }
-        getUser();
 
+    }
+    // const pageSubmit = async (e: any) => {
+    //     e.preventDefault();
+    //     setPageCreateLoading(true);
+    //     const formValues = {
+    //         name: e.target.name.value,
+    //         slug: slugify(e.target.name.value)+ "-" + Math.floor(Math.random() * 100),
+    //         description: e.target.description.value,
+    //         thumbnail: pageThumbnail,
+    //         content: "",
+    //     }
+    //     if(formValues.name){
+    //         setPageFromError(false);
+    //         formValues.content = "## Hello World";
+    //         try {
+    //             // @ts-ignore
+    //             tokenInfo &&  await createNewPost(formValues, tokenInfo?.id, getItem('proj'), tokenInfo?.token );
+    //             setPageCreateLoading(false);
+    //             setIsPageModalOpen(false);
+    //             toast.success("Page created successfully");
+    //             getPageInfo();
+    //         }
+    //         catch (e) {
+    //             setPageCreateLoading(false);
+    //             toast.error("Something went wrong");
+    //         }
+    //     }else {
+    //         setPageFromError(true);
+    //         setPageCreateLoading(false);
+    //     }
+    //
+    // }
+
+    useEffect( () => {
+        getPageInfo();
     },[])
+
     return <div className="w-[240px] bg-gray-100 min-h-[100vh] p-5">
         <div className="mb-10">
             <Link href="/">
@@ -55,35 +125,42 @@ const Sidebar = () => {
                 <ActivitySquare width={15}/><b>PROJECTS</b>
             </h4>
 
-            {projects && projects.map(({node: { name}}, i) => (
-                <Link key={i} href={`/${name}`}>
-                    <p className="flex gap-2 font-light text-gray-600 text-sm items-center hover:text-black">
+            {projects && projects.map(({node: { name, code, id, posts}}: any, i: number) => (
+                <Link onClick={() => {
+                    setItem('proj', id)
+                    setPosts(posts?.edges || []);
+                }} key={i} href={`/playground/${code}`}>
+                    <p className={`flex gap-2 font-light  text-sm items-center hover:text-black ${code === projectCode ? "text-black border-amber-500 border-r-2" : "text-gray-600"}`}>
                         <FolderKanban width={15}/><b>{name}</b>
                     </p>
                 </Link>
             ))}
 
-            <p className="cursor-pointer flex gap-2 font-light text-gray-600 text-xs items-center hover:text-black">
-                <PlusCircle width={15}/><b>Add a Project</b>
+            <p onClick={() => setIsProjectModalOpen(true)}
+                className="cursor-pointer flex gap-2 font-light text-gray-600 text-xs items-center hover:text-black">
+                <PlusCircle width={15}/><b>Create Project</b>
             </p>
 
-            <hr className="my-3"/>
+            {projectCode && (<>
 
-            <h4 className="flex gap-2 text-gray-400 text-xs items-center mb-1">
-                <ActivitySquare width={15}/><b>PAGES</b>
-            </h4>
+                <hr className="my-3"/>
 
-            <Link href="/">
-                <p className="flex gap-2 font-light text-gray-600 text-sm items-center hover:text-black">
-                    <FileSignature width={15}/><b>First page</b>
-                </p>
-            </Link>
+                <h4 className="flex gap-2 text-gray-400 text-xs items-center mb-1">
+                    <ActivitySquare width={15}/><b>POSTS</b>
+                </h4>
 
-            <Link href="/">
-                <p className="flex gap-2 font-light text-gray-600 text-xs items-center hover:text-black">
-                    <PlusCircle width={15}/><b>Add a Page</b>
-                </p>
-            </Link>
+                {posts && posts.map(({node: { name, slug, id}}: any) => <Link href={`/playground/${projectCode}/${slug}`} key={id}>
+                    <p className={`flex gap-2 font-light text-sm items-center hover:text-black ${slug === 'home' ?"text-black border-amber-500 border-r-2" : "text-gray-600"}`}>
+                        <FileSignature width={15}/><b>{name}</b>
+                    </p>
+                </Link>)}
+
+                {/*<p onClick={() => setIsPageModalOpen(true)}*/}
+                {/*   className="cursor-pointer flex gap-2 font-light text-gray-600 text-xs items-center hover:text-black">*/}
+                {/*    <PlusCircle width={15}/><b>New Posts</b>*/}
+                {/*</p>*/}
+
+            </>)}
 
             <hr className="my-3"/>
             <h4 className="flex gap-2 text-gray-400 text-xs items-center mb-1">
@@ -118,69 +195,9 @@ const Sidebar = () => {
             </Link>
         </div>
     {/*  project dialog  */}
-        <Transition appear show={isProjectModalOpen} as={Fragment}>
-            <Dialog as="div" className="relative z-10" onClose={closeProjectModal}>
-                <Transition.Child
-                    as={Fragment}
-                    enter="ease-out duration-300"
-                    enterFrom="opacity-0"
-                    enterTo="opacity-100"
-                    leave="ease-in duration-200"
-                    leaveFrom="opacity-100"
-                    leaveTo="opacity-0"
-                >
-                    <div className="fixed inset-0 bg-black bg-opacity-25" />
-                </Transition.Child>
-
-                <div className="fixed inset-0 overflow-y-auto">
-                    <div className="flex min-h-full items-center justify-center p-4 text-center">
-                        <Transition.Child
-                            as={Fragment}
-                            enter="ease-out duration-300"
-                            enterFrom="opacity-0 scale-95"
-                            enterTo="opacity-100 scale-100"
-                            leave="ease-in duration-200"
-                            leaveFrom="opacity-100 scale-100"
-                            leaveTo="opacity-0 scale-95"
-                        >
-                            <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                                <Dialog.Title
-                                    as="h3"
-                                    className="text-lg font-medium leading-6 text-gray-900"
-                                >
-                                    Create New Project
-                                </Dialog.Title>
-                                <div className="mt-2">
-                                    <p className="text-sm text-gray-500">
-                                        Get started by creating a new project.
-                                    </p>
-                                </div>
-
-                                <form onSubmit={projectSubmit} className="mt-4">
-                                    <div className="mb-4">
-
-                                        <Input name="name" variant="standard" label="Project Name" />
-                                    </div>
-
-                                    <div className="mt-4">
-                                    <button
-                                        type="submit"
-                                        className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                                    >
-                                        Submit
-                                    </button>
-                                </div>
-                                </form>
-
-
-
-
-                            </Dialog.Panel>
-                        </Transition.Child>
-                    </div>
-                </div>
-            </Dialog>
-        </Transition>
+    <ProjectModal isOpen={isProjectModalOpen} onClose={closeProjectModal} onSubmit={projectSubmit} validated={projectFromError} loading={projectCreateLoading}/>
+    {/*  page dialog  */}
+    {/*<PostModal isOpen={isPageModalOpen} onFileChange={(key, value)=> setPageThumbnail(value)} onClose={closePageModal} onSubmit={pageSubmit} validated={pageFromError} loading={pageCreateLoading}/>*/}
     </div>
 }
 

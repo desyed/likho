@@ -4,6 +4,7 @@ export const createProjectMutation = `
 			project {
 				id
 				name
+				code
 			}
 		}
 	}
@@ -94,6 +95,39 @@ export const getProjectByIdQuery = `
   }
 `;
 
+`query Project {
+  project(by: {}) {
+    
+  }
+}`
+export const getProjectByCodeQuery = `
+  query GetProjectByCode($code: String) {
+    project(by: { code: $code }) {
+        name
+        code
+        logo
+        description
+        subdomain {
+          name
+          id
+        }
+        posts(first: 100) {
+          edges {
+            node {
+              name
+              slug
+              description
+              thumbnail
+              published
+              id
+            }
+          }
+        }
+        id
+    }
+  }
+`;
+
 export const getUserQuery = `
   query GetUser($email: Email!) {
     user(by: { email: $email }) {
@@ -106,29 +140,28 @@ export const getUserQuery = `
 
 
 export const getProjectsOfUserQuery = `
-  query getUserProjects($id: ID!) {
+  query getUserProjects($id: ID!){
       user(by: {id: $id}) {
-        projects(first: 10) {
+        projects(first: 100) {
           edges {
             node {
               name
+              code
               liveSiteUrl
               subdomain {
                 name
                 id
               }
-              posts(first: 10) {
+              posts(first: 100) {
                 edges {
                   node {
-                    title
+                    name
                     slug
                     description
                     thumbnail
                     content
                     type
-                    publishedAt
-                    likes
-                    tags
+                    published
                     id
                   }
                 }
@@ -143,5 +176,71 @@ export const getProjectsOfUserQuery = `
         avatarUrl
         description
       }
+  }
+`;
+
+// name, project, user
+export const createSubDomainMutation = `
+	mutation SubdomainCreate($input: SubdomainCreateInput!) {
+		subdomainCreate(input: $input) {
+			subdomain {
+			    id
+				name
+			}
+		}
+	}
+`;
+
+export const deleteSubdomainMutation = `
+  mutation SubdomainDelete($id: ID!) {
+    subdomainDelete(by: { id: $id }) {
+      deletedId
+    }
+  }
+`;
+
+export const createPostMutation = `
+	mutation PostCreate($input: PostCreateInput!) {
+		postCreate(input: $input) {
+			post {
+				name
+			}
+		}
+	}
+`;
+
+export const updatePostMutation = `
+	mutation PostUpdate($by: PostByInput!, $input: PostUpdateInput!) {
+		postUpdate(by: $by, input: $input) {
+			post {
+				name
+                slug
+                description
+                thumbnail
+                content
+                type
+                published
+                createdAt
+                updatedAt
+                id
+			}
+		}
+	}
+`;
+
+export const getPostBySlugQuery = `
+  query GetPost($slug: String!) {
+    post(by: { slug: $slug }) {
+        id
+        name
+        slug
+        description
+        thumbnail
+        content
+        type
+        published
+        createdAt
+        updatedAt
+    }
   }
 `;

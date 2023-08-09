@@ -17,10 +17,8 @@ import { getToken } from "next-auth/jwt";
 export default async function middleware(req: NextRequest) {
   const url = req.nextUrl;
 
-  // Get hostname of request (e.g. demo.vercel.pub, demo.localhost:3000)
-  const hostname = req.headers
-    .get("host")!
-    .replace(".localhost:3000", `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`);
+  // Get hostname of request (e.g. demo.likho.site, demo.localhost:3000)
+  const hostname = req.headers.get("host")!;
 
   // Get the pathname of the request (e.g. /, /about, /blog/first-post)
   const path = url.pathname;
@@ -29,11 +27,12 @@ export default async function middleware(req: NextRequest) {
   // rewrites for app pages
     const session = await getToken({ req });
 
-    if(hostname.includes("www") && (hostname !== "www.likho.site")){
-      return NextResponse.rewrite(new URL(`/subdomain`, req.url));
-    }else if(!hostname.includes("www") && (hostname !== "likho.site")){
-      return NextResponse.rewrite(new URL(`/subdomain`, req.url));
-    }
+
+    // if(hostname.includes("www") && (hostname !== "www.likho.site")){
+    //   return NextResponse.rewrite(new URL(`/subdomain`, req.url));
+    // }else if(!hostname.includes("www") && (hostname !== "likho.site")){
+    //   return NextResponse.rewrite(new URL(`/subdomain`, req.url));
+    // }
 
 
 

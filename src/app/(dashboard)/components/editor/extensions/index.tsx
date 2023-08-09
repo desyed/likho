@@ -131,7 +131,9 @@ export const TiptapExtensions = [
   }),
   Markdown.configure({
     html: false,
+    linkify: true,
     transformCopiedText: true,
+    transformPastedText: true,
   }),
   TextAlign.configure({
     types: ['heading', 'paragraph', 'codeBlock', 'blockquote', 'image'],

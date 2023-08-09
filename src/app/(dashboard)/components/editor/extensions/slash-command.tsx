@@ -196,7 +196,7 @@ const getSuggestionItems = ({ query }: { query: string }) => {
     },
     {
       title: "Image",
-      description: "Upload an image from your computer.",
+      description: "UploadImage an image from your computer.",
       searchTerms: ["photo", "picture", "media"],
       icon: <ImageIcon size={18} />,
       command: ({ editor, range }: CommandProps) => {

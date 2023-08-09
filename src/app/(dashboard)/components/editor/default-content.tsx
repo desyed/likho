@@ -11,7 +11,7 @@ const DEFAULT_EDITOR_CONTENT = {
       content: [
         {
           type: "text",
-          text: "Novel is a Notion-style WYSIWYG editor with AI-powered autocompletion. Built with ",
+          text: "Likho editor offers Notion-style WYSIWYG editor with AI-powered autocompletion. Built with ",
         },
         {
           type: "text",
@@ -199,5 +199,14 @@ const DEFAULT_EDITOR_CONTENT = {
     },
   ],
 };
+
+export const DEFAULT_HOME_PAGE = {
+  name: 'Home Page',
+  slug: 'home',
+  description: 'This is the home page',
+  content: '### This is the home page',
+  published: true,
+  thumbnail: 'https://nextjs.org/docs/dark/partial-rendering.png',
+}
 
 export default DEFAULT_EDITOR_CONTENT;

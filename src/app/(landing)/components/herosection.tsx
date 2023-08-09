@@ -2,8 +2,10 @@ import Link from "next/link";
 import {Github} from "lucide-react";
 import LottiePlayer from "@/app/(landing)/components/LottiePlayer";
 import GetStartedButton from "@/app/(landing)/components/getStartedButton";
+import {getCurrentUser} from "@/lib/session";
 
-const Herosection = () => {
+const Herosection = async () => {
+    const session = await getCurrentUser();
     return (
         <div className="container flex">
             <div className="flex justify-center items-center">
@@ -15,7 +17,9 @@ const Herosection = () => {
                         Are you tired of spending countless hours creating and maintaining your website? Say goodbye to overwork and welcome the future of website building with LIKHO! Our revolutionary platform harnesses the power of AI and Grafbase, allowing you to effortlessly create captivating, powerful, and customizable websites without writing a single line of code.
                     </p>
                     <div className="flex gap-3">
-                        <GetStartedButton/>
+                        {!session?.user ? <GetStartedButton/> :
+                            <a href="/playground" className="bg-black text-white rounded-full px-5 py-1 text-sm flex gap-2 items-center mt-5 bg-gradient-to-r from-red-500 to-orange-500" >Playground</a>
+                        }
                         <Link href="https://github.com/desyed/likho" target="_blank" className="bg-black text-white rounded-full px-5 py-1 text-sm flex gap-2 items-center mt-5" ><Github width={15}/>Star on Github</Link>
                     </div>
                 </div>

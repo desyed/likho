@@ -15,7 +15,7 @@ const Features = () => {
                 </div>
                 <div className="md:w-1/4 p-5">
                     <div className="mb-2"><Newspaper/></div>
-                    <h2 className="uppercase font-bold text-gray-600 mb-2">Notion styled - wyswyg</h2>
+                    <h2 className="uppercase font-bold text-gray-600 mb-2">Notion styled - WYSIWYG</h2>
                     <p className="text-sm"> If you love Notion&apos;s simplicity and ease of use, you&apos;ll fall in love with LIKHO. Our interface is designed to be familiar and user-friendly, making it accessible to beginners and professionals alike.</p>
                 </div>
                 <div className="md:w-1/4 p-5">

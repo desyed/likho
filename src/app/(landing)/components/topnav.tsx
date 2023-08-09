@@ -2,8 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { getCurrentUser } from "@/lib/session";
-import AuthProvider from "@/components/auth/AuthProvider";
-import LogOutButton from "@/components/auth/LogOutButton";
+import AuthProvider from "@/app/(landing)/components/AuthProvider";
+import LogOutButton from "@/app/(landing)/components/LogOutButton";
 
 
 const Navbar = async () => {

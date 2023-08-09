@@ -1,15 +1,44 @@
-import { GraphQLClient } from "graphql-request";
-import { customAlphabet } from "nanoid";
+import {customAlphabet} from "nanoid";
 
-import { createProjectMutation, createUserMutation, deleteProjectMutation, updateProjectMutation, getProjectByIdQuery, getProjectsOfUserQuery, getUserQuery, projectsQuery } from "@/graphql";
-import {ProjectForm} from "@/lib/common.types";
+import {
+    createPostMutation,
+    createProjectMutation, createSubDomainMutation,
+    createUserMutation,
+    deleteProjectMutation, getPostBySlugQuery, getProjectByCodeQuery,
+    getProjectByIdQuery,
+    getProjectsOfUserQuery,
+    getUserQuery,
+    projectsQuery, updatePostMutation,
+    updateProjectMutation
+} from "@/graphql";
+import {PostForm, ProjectForm, UpdateForm} from "@/lib/common.types";
+import {GraphQLClient} from "graphql-request";
+import {isValidUrl, slugify} from "@/lib/utils";
+
+
+type SubdomainRes ={ subdomainCreate: { subdomain: { id: string, name: string } } };
 
 const isProduction = process.env.NODE_ENV === 'production';
 const apiUrl = isProduction ? process.env.NEXT_PUBLIC_GRAFBASE_API_URL || '' : 'http://127.0.0.1:4000/graphql';
 const apiKey = isProduction ? process.env.NEXT_PUBLIC_GRAFBASE_API_KEY || '' : 'letmein';
 const serverUrl = isProduction ? process.env.NEXT_PUBLIC_SERVER_URL : 'http://localhost:3000';
 
+
+const nanoid = customAlphabet(
+    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+    6,
+); // 6-character random string
+
 const client = new GraphQLClient(apiUrl);
+
+
+const makeGraphQLRequest = async (query: string, variables = {}) => {
+    try {
+        return await client.request(query, variables,);
+    } catch (err) {
+        throw err;
+    }
+};
 
 export const fetchToken = async () => {
     try {
@@ -19,14 +48,7 @@ export const fetchToken = async () => {
         throw err;
     }
 };
-export const fetchCurrentUser = async () => {
-    try {
-        const response = await fetch(`${serverUrl}/api/session`);
-        return response.json();
-    } catch (err) {
-        throw err;
-    }
-};
+
 
 export const uploadImage = async (imagePath: string) => {
     console.log("uploadImage", imagePath)
@@ -43,44 +65,37 @@ export const uploadImage = async (imagePath: string) => {
     }
 };
 
-const makeGraphQLRequest = async (query: string, variables = {}) => {
-    try {
-        return await client.request(query, variables);
-    } catch (err) {
-        throw err;
-    }
-};
 
-export const fetchAllProjects = (category?: string | null, endcursor?: string | null) => {
-    client.setHeader("x-api-key", apiKey);
+export const createNewProject = async (name: string, userId: string, token: string) => {
+        const code =  nanoid(6);
+        const subdomain = slugify(name) + "-" + slugify(code);
+        let subdomainRes: any;
+        try {
+            subdomainRes = await createSubDomain(subdomain, userId, token)!;
 
-    return makeGraphQLRequest(projectsQuery, { category, endcursor });
-};
+        } catch (err) {
+            return err;
+        }
 
-export const createNewProject = async (form: ProjectForm) => {
     // const imageUrl = await uploadImage(form.image);
-    const user = await fetchCurrentUser();
-    const {token} = await fetchToken();
 
-    // if (imageUrl.url) {
         client.setHeader("Authorization", `Bearer ${token}`);
 
-    console.log(token);
-    console.log(user)
-    return ;
 
-        const variables = {
+    const variables: any = {
             input: {
-                ...form,
-                code: nanoid(6),
+                name,
+                code,
                 createdBy: {
-                    link: user?.id
+                    link: userId
+                },
+                subdomain: {
+                    link: subdomainRes?.subdomainCreate?.subdomain.id || ""
                 }
             }
         };
 
-        return makeGraphQLRequest(createProjectMutation, variables);
-    // }
+        return await makeGraphQLRequest(createProjectMutation, variables);
 };
 
 export const updateProject = async (form: ProjectForm, projectId: string, token: string) => {
@@ -135,60 +150,51 @@ export const createUser = (name: string, email: string, avatarUrl?: string) => {
     return makeGraphQLRequest(createUserMutation, variables);
 };
 
-export const getUserProjects = (id: string) => {
-    console.log(id)
-    client.setHeader("x-api-key", apiKey);
-    return makeGraphQLRequest(getProjectsOfUserQuery, { id: id });
-};
 
 export const getUser = (email: string) => {
     client.setHeader("x-api-key", apiKey);
     return makeGraphQLRequest(getUserQuery, { email });
 };
-export const getCurrentSession = async () => {
-    try {
-        const response = await fetch(`${serverUrl}/api/session`);
-        return response.json();
-    } catch (err) {
-        throw err;
-    }
+
+export const getUserProjects = (id: string) => {
+    client.setHeader("x-api-key", apiKey);
+    return makeGraphQLRequest(getProjectsOfUserQuery, { id: id });
+};
+export const getProjectByCode = (code: string) => {
+    client.setHeader("x-api-key", apiKey);
+    return makeGraphQLRequest(getProjectByCodeQuery, { code } );
 };
 
 
-const nanoid = customAlphabet(
-    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
-    6,
-); // 6-character random string
+export const createNewPost = async (formValues: PostForm, userId: string, projectId: string, token: string) => {
+    client.setHeader("Authorization", `Bearer ${token}`);
 
-export const createPost = async (formData: FormData) => {
-    const title = formData.get("title") as string;
-    const content = formData.get("content") as string;
-    const image = formData.get("image") as string;
+    const formData: PostForm = {...formValues};
 
-    try {
-        const response = new Promise((resolve, reject)=> {
-           resolve({})
-        });
-        return response;
-    } catch (error: any) {
-        if (error.code === "P2002") {
-            return {
-                error: `This title is already taken`,
-            };
-        } else {
-            return {
-                error: error.message,
-            };
-        }
+    if(formValues.thumbnail && !isValidUrl(formValues.thumbnail)) {
+        const imageData = await uploadImage(formValues.thumbnail);
+        formData.thumbnail = imageData ? imageData?.secure_url : formValues.thumbnail;
     }
-}
 
-export const getPost = async () => {
+
+    const variables: any = {
+        input: {
+            ...formData,
+            createdBy: {
+                link: userId
+            },
+            project: {
+                link: projectId
+            }
+        }
+    };
+
+    return await makeGraphQLRequest(createPostMutation, variables);
+};
+
+export const getPostBySlug = async (slug: string) => {
     try {
-        const response =  setTimeout(()=> {
-            return {title: 'title', content: 'content'} ;
-        }, 1000);
-        return response ;
+        return await makeGraphQLRequest(getPostBySlugQuery, { slug });
     } catch (error: any) {
         return {
             error: error.message,
@@ -196,33 +202,39 @@ export const getPost = async () => {
     }
 }
 
-export const updatePost = async (id: string, data: any) => {
+export const updatePost = async ( data: any, token: string) => {
 
     try {
-        const response = new Promise((resolve, reject)=> {
-            resolve({})
-        });
-        return response;
-    } catch (error: any) {
-        if (error.code === "P2002") {
-            return {
-                error: `This  is already taken`,
-            };
-        } else {
-            return {
-                error: error.message,
-            };
+        const formData: UpdateForm = {...data};
+
+        if(data.thumbnail && !isValidUrl(data.thumbnail)) {
+            const imageData = await uploadImage(data.thumbnail);
+            formData.thumbnail = imageData ? imageData?.secure_url : data.thumbnail;
         }
+        const { name, slug, description, thumbnail, content, published} = formData;
+        client.setHeader("Authorization", `Bearer ${token}`);
+
+        const variables: any = {
+            by: {
+                slug
+            },
+            input: {
+                name, description, thumbnail, content, published
+            }
+        };
+
+        return await makeGraphQLRequest(updatePostMutation, variables);
+    } catch (error: any) {
+        return {
+            error: error.message,
+        };
     }
 }
-export const createSubDomain = async (formData: FormData) => {
-
+export const createSubDomain = async ( subdomain: string, userId: string, token: string) => {
+    client.setHeader("Authorization", `Bearer ${token}`);
 
     try {
-        const response = new Promise((resolve, reject)=> {
-            resolve({})
-        });
-        return response;
+        return await makeGraphQLRequest(createSubDomainMutation, { input: { name: subdomain } });
     } catch (error: any) {
         if (error.code === "P2002") {
             return {

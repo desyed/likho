@@ -16,17 +16,15 @@ const postTypeEnum = g.enum('Type', ['page', 'blog']);
 
 // @ts-ignore
 const post = g.model('Post', {
-  title: g.string().default('Write a title'),
+  name: g.string().default('Home Page'),
   slug: g.string().unique(),
-  description: g.string().optional().default('Write a description'),
+  description: g.string().optional().default('Awesome Home Page: powered by Likho!'),
   thumbnail: g.url().optional(),
   content: g.string().optional(),
   type: g.enumRef(postTypeEnum).default('page'),
-  publishedAt: g.datetime().optional(),
-  comments: g.relation(() => comment).optional().list().optional(),
-  likes: g.int().default(0),
-  tags: g.string().optional().list().length({ max: 5 }),
-  author: g.relation(() => user).optional(),
+  published: g.boolean().default(true),
+  // comments: g.relation(() => comment).optional().list().optional(),
+  createdBy: g.relation(() => user).optional(),
   project: g.relation(() => project).optional()
 }).search().auth((rules) => {
   rules.public().read()
@@ -37,6 +35,8 @@ const project = g.model('Project', {
   name: g.string().length({ min: 3}).search(),
   code: g.string().length({ min: 6, max: 6}).unique(),
   liveSiteUrl: g.url().optional(),
+  logo: g.url().optional(),
+  description: g.string().optional(),
   subdomain: g.relation(() => Subdomain).optional(),
   posts: g.relation(post).optional().list().optional(),
   createdBy: g.relation(() => user),
@@ -45,20 +45,18 @@ const project = g.model('Project', {
   rules.private().create().delete().update()
 })
 
-const comment = g.model('Comment', {
-  post: g.relation(post),
-  body: g.string(),
-  likes: g.int().default(0),
-  author: g.relation(() => user).optional()
-})
+// const comment = g.model('Comment', {
+//   post: g.relation(post),
+//   body: g.string(),
+//   likes: g.int().default(0),
+//   author: g.relation(() => user).optional()
+// })
 // @ts-ignore
 const user = g.model('User', {
   name: g.string(),
   email: g.email().unique(),
   avatarUrl: g.url().optional(),
   description: g.string().optional(),
-  posts: g.relation(post).optional().list().optional(),
-  comments: g.relation(comment).optional().list().optional(),
   projects: g.relation(project).optional().list().optional()
 }).search().auth((rules) => {
   rules.public().read()
@@ -67,8 +65,7 @@ const user = g.model('User', {
 // @ts-ignore
 const Subdomain = g.model('Subdomain', {
     name: g.string().unique(),
-    project: g.relation(project).optional(),
-    user: g.relation(user).optional()
+    projects: g.relation(project).optional().list().optional()
 }).search().auth((rules) => {
     rules.public().read()
     rules.private().create().delete().update()
