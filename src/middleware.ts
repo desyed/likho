@@ -16,9 +16,19 @@ export async function middleware(req: NextRequest) {
   const subdomain = getValidSubdomain(host);
   if (subdomain) {
     // Subdomain available, rewriting
-    console.log(`>>> Rewriting: ${url.pathname} to /${subdomain}${url.pathname}`);
-    url.pathname = `/${subdomain}${url.pathname}`;
+    // console.log(`>>> Rewriting: ${url.pathname} to /${subdomain}${url.pathname}`);
+    // url.pathname = `/${subdomain}${url.pathname}`;
+    // url.host = `${subdomain}.${url.host}`;
+    // url.hostname = `${subdomain}.${url.hostname}`;
+    // console.log('url', url)
+    return NextResponse.rewrite(new URL(`/d`, req.url));
   }
+
+  // if(hostname.includes("www") && (hostname !== "www.likho.site")){
+  //   return NextResponse.rewrite(new URL(`/d`, req.url));
+  // }else if(!hostname.includes("www") && (hostname !== "likho.site")){
+  //   return NextResponse.rewrite(new URL(`/subdomain`, req.url));
+  // }
 
   return NextResponse.rewrite(url);
 }

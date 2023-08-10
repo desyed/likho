@@ -8,7 +8,7 @@ const secret = process.env.NEXTAUTH_SECRET;
 
 export async function GET(req: NextRequest) {
     const token = await getToken({ req, secret, raw: true });
-    const { user} = await getServerSession(authOptions) as SessionInterface;
+    const res = await getServerSession(authOptions) as SessionInterface;
 
-    return NextResponse.json({ token, ...user }, { status: 200 });
+    return NextResponse.json({ token, ...res?.user }, { status: 200 });
 }
