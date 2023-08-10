@@ -1,7 +1,7 @@
 // middleware.ts
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { getValidSubdomain } from '@/utils/subdomain';
+// import { getValidSubdomain } from '@/utils/subdomain';
 import {isSubdomain} from "@/lib/utils";
 
 // RegExp for public files
