@@ -1,57 +1,26 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
+// middleware.ts
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { getValidSubdomain } from '@/utils/subdomain';
 import {isSubdomain} from "@/lib/utils";
 
-// export const config = {
-//   matcher: [
-//     /*
-//      * Match all paths except for:
-//      * 1. /api routes
-//      * 2. /_next (Next.js internals)
-//      * 3. /_static (inside /public)
-//      * 4. all root files inside /public (e.g. /favicon.ico)
-//      */
-//     "/((?!api/|_next/|_static/|_vercel|[\\w-]+\\.\\w+).*)",
-//   ],
-// };
+// RegExp for public files
+const PUBLIC_FILE = /\.(.*)$/; // Files
 
-export default async function middleware(req: NextRequest) {
-  const url = req.nextUrl;
+export async function middleware(req: NextRequest) {
+  // Clone the URL
+  const url = req.nextUrl.clone();
 
-  // Get hostname of request (e.g. demo.likho.site, demo.localhost:3000)
-  const hostname = req.headers.get("host")!;
+  // Skip public files
+  if (PUBLIC_FILE.test(url.pathname) || url.pathname.includes('_next')) return;
 
-  // Get the pathname of the request (e.g. /, /about, /blog/first-post)
-  const path = url.pathname;
+  const host = req.headers.get('host');
+  const subdomain = isSubdomain(host || "");
+  if (subdomain) {
+    // Subdomain available, rewriting
+    console.log(`>>> Rewriting: ${url.pathname} to /${subdomain}${url.pathname}`);
+    url.pathname = `/${subdomain}${url.pathname}`;
+  }
 
-
-  // rewrites for app pages
-    const session = await getToken({ req });
-
-    if(isSubdomain(hostname)){
-      return NextResponse.rewrite(new URL(`/subdomain`, req.url));
-    }else {
-        return NextResponse.rewrite(new URL(`/`, req.url));
-    }
-
-
-    // if(hostname.includes("www") && (hostname !== "www.likho.site")){
-    //   return NextResponse.rewrite(new URL(`/subdomain`, req.url));
-    // }else if(!hostname.includes("www") && (hostname !== "likho.site")){
-    //   return NextResponse.rewrite(new URL(`/subdomain`, req.url));
-    // }
-
-
-
-  
-  // rewrite root application to `/home` folder
-  // if (
-  //   hostname === "localhost:3000" ||
-  //   hostname === process.env.NEXT_PUBLIC_ROOT_DOMAIN
-  // ) {
-  //   return NextResponse.rewrite(new URL(`/subdomain`, req.url));
-  // }
-
-  // rewrite everything else to `/[domain]/[path] dynamic route
-  // return NextResponse.rewrite(new URL(`/${hostname}${path}`, req.url));
+  return NextResponse.rewrite(url);
 }
