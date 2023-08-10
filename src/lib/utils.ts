@@ -67,6 +67,21 @@ export const isSubdomain = (url: string) => {
  // Check if there are more than two parts (subdomain.domain.tld)
  return urlParts.length > 2;
 }
+export const getValidSubdomain = (host?: string | null) => {
+ let subdomain: string | null = null;
+ if (!host && typeof window !== 'undefined') {
+  // On client side, get the host from window
+  host = window.location.host;
+ }
+ if (isSubdomain(host || '')) {
+  const candidate = host ? host.split('.')[0] : null;
+  if (candidate && !candidate.includes('localhost')) {
+   // Valid candidate
+   subdomain = candidate;
+  }
+ }
+ return subdomain;
+};
 
 export const getSubdomain = (url: string) => {
  // check url validity
