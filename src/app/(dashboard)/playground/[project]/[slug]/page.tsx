@@ -1,5 +1,5 @@
 "use client"
-import Editor from "@/app/(dashboard)/components/editor";
+import Editor from "@/app/(dashboard)/components/editor/index";
 import {getPostBySlug} from "@/lib/actions";
 import {useEffect, useState} from "react";
 

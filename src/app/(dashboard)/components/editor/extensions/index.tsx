@@ -50,6 +50,7 @@ export const TiptapExtensions = [
           "rounded-sm bg-stone-100 p-5 font-mono font-medium text-stone-800",
       },
     },
+
     code: {
       HTMLAttributes: {
         class:
@@ -99,7 +100,7 @@ export const TiptapExtensions = [
   CustomImage.configure({
     allowBase64: true,
     HTMLAttributes: {
-      class: "rounded-lg border border-stone-200",
+      class: "rounded-lg border border-stone-200 inline-block",
     },
   }),
   Placeholder.configure({
@@ -130,7 +131,7 @@ export const TiptapExtensions = [
     nested: true,
   }),
   Markdown.configure({
-    html: false,
+    html: true,
     linkify: true,
     transformCopiedText: true,
     transformPastedText: true,

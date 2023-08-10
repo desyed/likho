@@ -8,6 +8,9 @@ module.exports = withMT( {
   ],
   theme: {
     extend: {
+      backgroundImage: {
+        'post-hero': "url('/images/bg-post.jpg')",
+      },
       container: {
         center: true,
         padding: "2rem",

@@ -1,128 +1,85 @@
-import { notFound } from "next/navigation";
-import MDX from "@/app/subdomain/components/mdx";
-import DEFAULT_EDITOR_CONTENT from "@/app/(dashboard)/components/editor/default-content";
-import {getMdxSource} from "@/lib/utils";
-// import { getPostData } from "@/lib/fetchers";
-// import MDX from "@/components/mdx";
+"use client"
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { domain: string; slug: string };
-}) {
-  const { domain, slug } = params;
-  // const data = await getPostData(domain, slug);
-  // if (!data) {
-  //   return null;
-  // }
-  // const { title, description } = data;
+import React, {useEffect, useMemo} from 'react'
 
-  return {
-    title:'asdfasd',
-    description: 'asdfadsf',
-    // openGraph: {
-    //   title,
-    //   description,
-    // },
-    // twitter: {
-    //   card: "summary_large_image",
-    //   title,
-    //   description,
-    //   creator: "@vercel",
-    // },
-  };
-}
+import hljs from "highlight.js";
+import {Github} from "lucide-react";
 
-export default async function SitePostPage({
-  params,
-}: {
-  params: { domain: string; slug: string };
-}) {
-  const { domain, slug } = params;
-  // const data = await getPostData(domain, slug);
-  //
-  // if (!data) {
-  //   notFound();
-  // }
+const html = '<h2>Introducing Novel</h2><blockquote class="border-l-4 border-stone-700"><p>Likho editor offers Notion-style WYSIWYG editor with AI-powered autocompletion. Built with <a target="_blank" rel="noopener noreferrer nofollow" class="text-stone-400 underline underline-offset-[3px] hover:text-stone-600 transition-colors cursor-pointer text-stone-400 underline underline-offset-[3px] hover:text-stone-600 transition-colors cursor-pointer" href="https://tiptap.dev/">Tiptap</a> and <a target="_blank" rel="noopener noreferrer nofollow" class="text-stone-400 underline underline-offset-[3px] hover:text-stone-600 transition-colors cursor-pointer text-stone-400 underline underline-offset-[3px] hover:text-stone-600 transition-colors cursor-pointer text-stone-400 underline underline-offset-[3px] hover:text-stone-600 transition-colors cursor-pointer" href="https://sdk.vercel.ai/docs">Vercel AI SDK</a>.</p></blockquote><pre class="rounded-sm bg-stone-100 p-5 font-mono font-medium text-stone-800"><code>export default async function RootLayout({ children }: { children: React.ReactNode }) {\n' +
+    '    const session = await getCurrentUser();\n' +
+    '    if(!session?.user) {\n' +
+    '        redirect("/")\n' +
+    '    }\n' +
+    '  return (\n' +
+    '    &lt;html lang="en"&gt;\n' +
+    '      &lt;body className={`${inter.className} `}&gt;\n' +
+    '      {children}\n' +
+    '      &lt;/body&gt;\n' +
+    '    &lt;/html&gt;\n' +
+    '  )\n' +
+    '}</code></pre><h3>Features</h3><ol class="list-decimal list-outside leading-3 -mt-2 tight" data-tight="true"><li class="leading-normal -mb-2"><p>Slash menu &amp; bubble menu sfs </p></li><li class="leading-normal -mb-2"><p>AI autocomplete (type <code class="rounded-md bg-stone-200 px-1.5 py-1 font-mono font-medium text-stone-900" spellcheck="false">++</code> to activate, or select from slash menu)</p></li><li class="leading-normal -mb-2"><p>Image uploads (drag &amp; drop / copy &amp; paste, or select from slash menu)</p></li></ol><img class="rounded-lg border border-stone-200 inline-block" src="https://public.blob.vercel-storage.com/pJrjXbdONOnAeZAZ/banner-2wQk82qTwyVgvlhTW21GIkWgqPGD2C.png" alt="banner.png" title="banner.png"><hr class="mt-4 mb-6 border-t border-stone-300"><h3>Learn more</h3><ul class="not-prose pl-2" data-type="taskList"><li class="flex items-start my-4" data-checked="false" data-type="taskItem"><label><input type="checkbox"><span></span></label><div><p>Check out the <a target="_blank" rel="noopener noreferrer nofollow" class="text-stone-400 underline underline-offset-[3px] hover:text-stone-600 transition-colors cursor-pointer text-stone-400 underline underline-offset-[3px] hover:text-stone-600 transition-colors cursor-pointer text-stone-400 underline underline-offset-[3px] hover:text-stone-600 transition-colors cursor-pointer" href="https://twitter.com/steventey/status/1669762868416512000">launch video</a></p></div></li><li class="flex items-start my-4" data-checked="false" data-type="taskItem"><label><input type="checkbox"><span></span></label><div><p>Star us on <a target="_blank" rel="noopener noreferrer nofollow" class="text-stone-400 underline underline-offset-[3px] hover:text-stone-600 transition-colors cursor-pointer text-stone-400 underline underline-offset-[3px] hover:text-stone-600 transition-colors cursor-pointer" href="https://github.com/steven-tey/novel">GitHub</a></p></div></li><li class="flex items-start my-4" data-checked="false" data-type="taskItem"><label><input type="checkbox"><span></span></label><div><p><a target="_blank" rel="noopener noreferrer nofollow" class="text-stone-400 underline underline-offset-[3px] hover:text-stone-600 transition-colors cursor-pointer text-stone-400 underline underline-offset-[3px] hover:text-stone-600 transition-colors cursor-pointer" href="https://vercel.com/templates/next.js/novel">Deploy your own</a> to Vercel</p></div></li></ul>'
+const Page = () => {
 
-
-
-  const data = await getMdxSource(`## Introducing Novelsd\\n\\nLikho editor offers Notion-style WYSIWYG editor with AI-powered autocompletion. Built with [Tiptap](https://tiptap.dev/) and [Vercel AI SDK](https://sdk.vercel.ai/docs).\\n\\n### Features\\n\\n1. Slash menu & bubble menu\\n2. AI autocomplete (type \`++\` to activate, or select from slash menu)\\n3. Image uploads (drag & drop / copy & paste, or select from slash menu)\\n\\n![banner.png](https://public.blob.vercel-storage.com/pJrjXbdONOnAeZAZ/banner-2wQk82qTwyVgvlhTW21GIkWgqPGD2C.png \\"banner.png\\")---\\n\\n### Learn more\\n\\n- [ ] Check out the [launch video](https://twitter.com/steventey/status/1669762868416512000)\\n\\n- [ ] Star us on [GitHub](https://github.com/steven-tey/novel)\\n\\n- [ ] [Deploy your own](https://vercel.com/templates/next.js/novel) to Vercel`);
+  useEffect(() => {
+    hljs.highlightAll();
+  });
 
   return (
-    <>
-      <div className="flex flex-col items-center justify-center">
-        <div className="m-auto w-full text-center md:w-7/12">
-          <p className="m-auto my-5 w-10/12 text-sm font-light text-stone-500 dark:text-stone-400 md:text-base">
-          </p>
-          <h1 className="mb-10 font-title text-3xl font-bold text-stone-800 dark:text-white md:text-6xl">
-            {"{data.title}"}
-          </h1>
-          <p className="text-md m-auto w-10/12 text-stone-600 dark:text-stone-400 md:text-lg">
-            {"{data.description}"}
-          </p>
-        </div>
-        <a
-          // if you are using Git hub OAuth, you can get rid of the Twitter option
-          href=""
-          rel="noreferrer"
-          target="_blank"
-        >
-          <div className="my-8">
-            <div className="relative inline-block h-8 w-8 overflow-hidden rounded-full align-middle md:h-12 md:w-12">
-              {/*{data.site?.user?.image ? (*/}
-              {/*  <img*/}
-              {/*    alt={data.site?.user?.name ?? "User Avatar"}*/}
-              {/*    height={80}*/}
-              {/*    src={data.site.user.image}*/}
-              {/*    width={80}*/}
-              {/*  />*/}
-              {/*) : (*/}
-              {/*  <div className="absolute flex h-full w-full select-none items-center justify-center bg-stone-100 text-4xl text-stone-500">*/}
-              {/*    ?*/}
-              {/*  </div>*/}
-              {/*)}*/}
-            </div>
-            <div className="text-md ml-3 inline-block align-middle dark:text-white md:text-lg">
-              {/*by <span className="font-semibold">{data.site?.user?.name}</span>*/}
-            </div>
-          </div>
-        </a>
-      </div>
-      <div className="relative m-auto mb-10 h-80 w-full max-w-screen-lg overflow-hidden md:mb-20 md:h-150 md:w-5/6 md:rounded-2xl lg:w-2/3">
-        {/*<img*/}
-        {/*  alt={data.title ?? "Post image"}*/}
-        {/*  width={1200}*/}
-        {/*  height={630}*/}
-        {/*  className="h-full w-full object-cover"*/}
-        {/*  placeholder="blur"*/}
-        {/*  src={data.image ?? "/placeholder.png"}*/}
-        {/*/>*/}
-      </div>
+      <div>
+          <div className=" text-center mb-10 relative  bg-bottom bg-[url('/bg-post.jpg')] bg-no-repeat" >
+              <div className="w-[90%] max-w-[1200px] mb-5 mx-auto">
+                  <div className="flex pb-5 items-center justify-between">
+                      <div className="">
+                          <img className="h-5" src="/likho.svg" alt="logo"/>
+                      </div>
+                      <div >
+                          <a href="https://github.com/desyed/likho" type="button" className="inline-flex items-center mt-2 px-3 py-0 border border-transparent text-xs  rounded-full shadow-sm text-white bg-stone-600 hover:bg-stone-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-stone-500">
+                              <Github width={15}/> Star on Github
+                          </a>
+                      </div>
+                  </div>
+                  <img className="shadow-xl w-full rounded-lg inline-block" src="https://public.blob.vercel-storage.com/pJrjXbdONOnAeZAZ/banner-2wQk82qTwyVgvlhTW21GIkWgqPGD2C.png" alt="banner.png" title="banner.png"/>
 
-      <MDX source={data} />
-      {/*<MDX source={DEFAULT_EDITOR_CONTENT.content} />*/}
+                  <h1 className="text-3xl font-bold mt-20">This the the very Title of this post</h1>
 
-        <div className="relative mb-20 mt-10 sm:mt-20">
-          <div
-            className="absolute inset-0 flex items-center"
-            aria-hidden="true"
-          >
-            <div className="w-full border-t border-stone-300 dark:border-stone-700" />
+              </div>
+              {/*<div className="absolute bg-top h-full left-0 top-0 w-full"></div>*/}
           </div>
-          <div className="relative flex justify-center">
-            <span className="bg-white px-2 text-sm text-stone-500 dark:bg-black dark:text-stone-400">
-              Continue Reading
-            </span>
-          </div>
+        <div className="w-[90%] max-w-[1200px] mb-10 mx-auto">
+            <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                    <div className="flex-shrink-0">
+                        <img className="h-10 w-10 rounded-full" src="https://public.blob.vercel-storage.com/1f3b8b8c-4b0b-4b0b-8b8c-4b0b4b0b8b8c/IMG_20210912_161711.jpg" alt=""/>
+                    </div>
+                    <div className="ml-3">
+                        <p className="text-sm font-medium text-gray-900">Syed Shihab</p>
+                        <div className="flex space-x-1 text-sm text-gray-500">
+                            <time dateTime="2021-09-12">Sep 12</time><span aria-hidden="true">&middot;</span>
+                            <span>3 min read</span>
+                        </div>
+                    </div>
+                </div>
+                <div className="flex-shrink-0">
+                    {/*<button type="button" className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-stone-600 hover:bg-stone-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-stone-500">*/}
+                    {/*    Subscribe*/}
+                    {/*</button>*/}
+                </div>
+            </div>
         </div>
-      {/*{data.adjacentPosts && (*/}
-      {/*  <div className="mx-5 mb-20 grid max-w-screen-xl grid-cols-1 gap-x-4 gap-y-8 md:grid-cols-2 xl:mx-auto xl:grid-cols-3">*/}
-      {/*    {data.adjacentPosts.map((data, index) => (*/}
-      {/*      <BlogCard key={index} data={data} />*/}
-      {/*    ))}*/}
-      {/*  </div>*/}
-      {/*)}*/}
-    </>
-  );
+        <div className=" w-[90%] max-w-[1200px] mb-5 mx-auto">
+          <div className="ProseMirror prose-lg prose-stone dark:prose-invert prose-headings:font-display font-default focus:outline-none max-w-full"
+               dangerouslySetInnerHTML={{__html: html}}></div>
+        </div>
+          <div className="bg-gray-300 py-10 mt-10">
+                <div className="w-[90%] max-w-[1200px] mb-5 mx-auto">
+                    <div className="flex items-center justify-between">
+                        <p className="text-xs font-medium text-gray-600">Deloped by Syed Shihab</p>
+                        <p className="text-xs font-medium text-gray-600">Build with <b>Likho</b> <b>&middot;</b> Proudly Open Source</p>
+                    </div>
+                </div>
+          </div>
+      </div>
+  )
 }
+
+export default Page;

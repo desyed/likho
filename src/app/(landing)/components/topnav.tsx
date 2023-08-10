@@ -4,10 +4,17 @@ import Link from "next/link";
 import { getCurrentUser } from "@/lib/session";
 import AuthProvider from "@/app/(landing)/components/AuthProvider";
 import LogOutButton from "@/app/(landing)/components/LogOutButton";
+import {redirect} from "next/navigation";
 
 
 const Navbar = async () => {
-    const session = await getCurrentUser();
+    let session = null;
+    try{
+        session = await getCurrentUser();
+    }catch (e) {
+        redirect('/')
+    }
+
 
     return (
         <nav className='justify-between flex items-center px-10 py-5'>

@@ -55,3 +55,6 @@
 body {
   background-color: var(--novel-white);
 }
+.hljs{
+  background: transparent;
+}

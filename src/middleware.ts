@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
+import {isSubdomain} from "@/lib/utils";
 
 // export const config = {
 //   matcher: [
@@ -26,6 +27,12 @@ export default async function middleware(req: NextRequest) {
 
   // rewrites for app pages
     const session = await getToken({ req });
+
+    // if(isSubdomain(hostname)){
+    //   return NextResponse.rewrite(new URL(`/subdomain`, req.url));
+    // }else {
+    //     return NextResponse.rewrite(new URL(`/`, req.url));
+    // }
 
 
     // if(hostname.includes("www") && (hostname !== "www.likho.site")){

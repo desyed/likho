@@ -43,6 +43,7 @@
     "framer-motion": "^10.15.0",
     "graphql": "^16.7.1",
     "graphql-request": "^6.1.0",
+    "highlight.js": "^11.8.0",
     "jsonwebtoken": "^9.0.1",
     "lucide-react": "^0.263.1",
     "next": "13.4.12",

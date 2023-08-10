@@ -1,108 +1,65 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import { TiptapEditorProps } from "./props";
 import { TiptapExtensions } from "./extensions";
-import { useDebounce } from "use-debounce";
+import { useDebouncedCallback } from "use-debounce";
 import { useCompletion } from "ai/react";
 import { toast } from "sonner";
 import va from "@vercel/analytics";
-import TextareaAutosize from "react-textarea-autosize";
-import { updatePost } from "@/lib/actions";
-import {cn, getHost, getSubdomain} from "@/lib/utils";
-import { ExternalLink } from "lucide-react";
-import {EditorBubbleMenu} from "@/app/(dashboard)/components/editor/components";
-import {usePathname} from "next/navigation";
-import {getTokenOnly} from "@/lib/services/storage";
+import DEFAULT_EDITOR_CONTENT from "./default-content";
+import { EditorBubbleMenu } from "./components";
+import useLocalStorage from "@/app/(dashboard)/components/editor/hooks/use-local-storage";
+import {getPrevText} from "@/app/(dashboard)/components/editor/plugins/editor";
 
-interface Post {
-  id: string;
-  name: string;
-  slug: string;
-  thumbnail: string;
-  description: string;
-  content: string;
-  published: boolean;
-}
-export default function Editor({ post }: { post: Post }) {
-  let [isPendingSaving, startTransitionSaving] = useTransition();
-  let [isPendingPublishing, startTransitionPublishing] = useTransition();
+export default function Editor() {
+  const [content, setContent] = useLocalStorage(
+    "content",
+    DEFAULT_EDITOR_CONTENT,
+  );
+  const [saveStatus, setSaveStatus] = useState("Saved");
 
-  const [data, setData] = useState<Post>(post);
   const [hydrated, setHydrated] = useState(false);
 
-  // TODO: get project code from url
-
-  const pathname = usePathname()
-  const slug = pathname.split('/').pop() || '';
-
-  const subdomain = getSubdomain(getHost());
-
-  const [debouncedData] = useDebounce(data, 1000);
-
-  useEffect(() => {
-    // compare the title, description, thumbnail and content only
-    if (
-        debouncedData?.name === post?.name &&
-        debouncedData?.description === post?.description &&
-        debouncedData?.thumbnail === post?.thumbnail &&
-        debouncedData?.content === post?.content
-    ) {
-      return;
-    }
-    startTransitionSaving(async () => {
-      await updatePost(debouncedData, getTokenOnly());
-
-    });
-  }, [debouncedData, post]);
-
-  // listen to CMD + S and override the default behavior
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.metaKey && e.key === "s") {
-        e.preventDefault();
-        startTransitionSaving(async () => {
-          await updatePost(data, getTokenOnly());
-        });
-      }
-    };
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [data, startTransitionSaving]);
+  const debouncedUpdates = useDebouncedCallback(async ({ editor }) => {
+    const json = editor.getJSON();
+    const html = editor.getHTML();
+    setSaveStatus("Saving...");
+    setContent(json);
+    console.log("json", html)
+    // Simulate a delay in saving.
+    setTimeout(() => {
+      setSaveStatus("Saved");
+    }, 500);
+  }, 750);
 
   const editor = useEditor({
     extensions: TiptapExtensions,
     editorProps: TiptapEditorProps,
     onUpdate: (e) => {
+      setSaveStatus("Unsaved");
       const selection = e.editor.state.selection;
-      const lastTwo = e.editor.state.doc.textBetween(
-          selection.from - 2,
-          selection.from,
-          "\n",
-      );
+      const lastTwo = getPrevText(e.editor, {
+        chars: 2,
+      });
       if (lastTwo === "++" && !isLoading) {
         e.editor.commands.deleteRange({
           from: selection.from - 2,
           to: selection.from,
         });
-        // we're using this for now until we can figure out a way to stream markdown text with proper formatting: https://github.com/steven-tey/novel/discussions/7
         complete(
-            `Title: ${data.name}\n Description: ${
-                data.description
-            }\n\n ${e.editor.getText()}`,
+          getPrevText(e.editor, {
+            chars: 5000,
+          }),
         );
         // complete(e.editor.storage.markdown.getMarkdown());
         va.track("Autocomplete Shortcut Used");
       } else {
-        setData((prev: any) => ({
-          ...prev,
-          content: e.editor.storage.markdown.getMarkdown(),
-        }));
+        debouncedUpdates(e);
       }
     },
+    autofocus: "end",
   });
 
   const { complete, completion, isLoading, stop } = useCompletion({
@@ -151,11 +108,7 @@ export default function Editor({ post }: { post: Post }) {
       e.stopPropagation();
       stop();
       if (window.confirm("AI writing paused. Continue?")) {
-        complete(
-            `Title: ${data.name}\n Description: ${data.description}\n\n ${
-                editor?.getText() || " "
-            }`,
-        );
+        complete(editor?.getText() || "");
       }
     };
     if (isLoading) {
@@ -169,92 +122,28 @@ export default function Editor({ post }: { post: Post }) {
       document.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("mousedown", mousedownHandler);
     };
-  }, [
-    stop,
-    isLoading,
-    editor,
-    complete,
-    completion?.length,
-    data?.name,
-    data?.description,
-  ]);
+  }, [stop, isLoading, editor, complete, completion.length]);
 
-  // Hydrate the editor with the content
+  // Hydrate the editor with the content from localStorage.
   useEffect(() => {
-    if (editor && post?.content && !hydrated) {
-      editor.commands.setContent(post.content);
+    if (editor && content && !hydrated) {
+      editor.commands.setContent(content);
       setHydrated(true);
     }
-  }, [editor, post, hydrated]);
+  }, [editor, content, hydrated]);
 
   return (
-      <div className="relative min-h-[500px] w-full max-w-screen-lg border-stone-200 p-12 px-8 dark:border-stone-700 sm:mb-[calc(20vh)] sm:rounded-lg sm:border sm:px-12 sm:shadow-lg">
-        <div className="absolute right-5 top-5 mb-5 flex items-center space-x-3">
-          {data?.published && (
-              <a
-                  // href={url}
-                  href={"/" + post.slug}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center space-x-1 text-sm text-stone-400 hover:text-stone-500"
-              >
-                <ExternalLink className="h-4 w-4" />
-              </a>
-          )}
-          <div className="rounded-lg bg-stone-100 px-2 py-1 text-sm text-stone-400 dark:bg-stone-800 dark:text-stone-500">
-            {isPendingSaving ? "Saving..." : "Saved"}
-          </div>
-          <button
-              onClick={() => {
-                const formData = new FormData();
-                console.log(data.published, typeof data.published);
-                formData.append("published", String(!data.published));
-                startTransitionPublishing(async () => {
-                  // await updatePostMetadata(formData, post.id, "published").then(
-                  //     () => {
-                  //       toast.success(
-                  //           `Successfully ${
-                  //               data.published ? "unpublished" : "published"
-                  //           } your post.`,
-                  //       );
-                  //       setData((prev: any) => ({ ...prev, published: !prev.published }));
-                  //     },
-                  // );
-                });
-              }}
-              className={cn(
-                  "flex h-7 w-24 items-center justify-center space-x-2 rounded-lg border text-sm transition-all focus:outline-none",
-                  isPendingPublishing
-                      ? "cursor-not-allowed border-stone-200 bg-stone-100 text-stone-400 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300"
-                      : "border border-black bg-black text-white hover:bg-white hover:text-black active:bg-stone-100 dark:border-stone-700 dark:hover:border-stone-200 dark:hover:bg-black dark:hover:text-white dark:active:bg-stone-800",
-              )}
-              disabled={isPendingPublishing}
-          >
-            {isPendingPublishing ? (
-                <p>loading...</p>
-            ) : (
-                <p>{data?.published ? "Unpublish" : "Publish"}</p>
-            )}
-          </button>
-        </div>
-        <div className="mb-5 flex flex-col space-y-3 border-b border-stone-200 pb-5 dark:border-stone-700">
-          <input
-              type="text"
-              placeholder="Write your post title here"
-              defaultValue={post?.name || ""}
-              autoFocus
-              onChange={(e) => setData({ ...data, name: e.target.value })}
-              className="dark:placeholder-text-600 border-none px-0 font-cal text-3xl placeholder:text-stone-400 focus:outline-none focus:ring-0 dark:bg-black dark:text-white"
-          />
-          <TextareaAutosize
-              placeholder="Write your post description here"
-              defaultValue={post?.description || ""}
-              onChange={(e) => setData({ ...data, description: e.target.value })}
-              className="dark:placeholder-text-600 w-full resize-none border-none px-0 placeholder:text-stone-400 focus:outline-none focus:ring-0 dark:bg-black dark:text-white"
-          />
-        </div>
-        {editor && <EditorBubbleMenu editor={editor} />}
-        <EditorContent editor={editor} />
+    <div
+      onClick={() => {
+        editor?.chain().focus().run();
+      }}
+      className="relative min-h-[500px] w-full max-w-screen-lg border-stone-200 bg-white p-12 px-8 sm:mb-[calc(20vh)] sm:rounded-lg sm:border sm:px-12 sm:shadow-lg"
+    >
+      <div className="absolute right-5 top-5 mb-5 rounded-lg bg-stone-100 px-2 py-1 text-sm text-stone-400">
+        {saveStatus}
       </div>
+      {editor && <EditorBubbleMenu editor={editor} />}
+      <EditorContent editor={editor} />
+    </div>
   );
 }
