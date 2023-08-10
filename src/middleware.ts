@@ -28,11 +28,11 @@ export default async function middleware(req: NextRequest) {
   // rewrites for app pages
     const session = await getToken({ req });
 
-    // if(isSubdomain(hostname)){
-    //   return NextResponse.rewrite(new URL(`/subdomain`, req.url));
-    // }else {
-    //     return NextResponse.rewrite(new URL(`/`, req.url));
-    // }
+    if(isSubdomain(hostname)){
+      return NextResponse.rewrite(new URL(`/subdomain`, req.url));
+    }else {
+        return NextResponse.rewrite(new URL(`/`, req.url));
+    }
 
 
     // if(hostname.includes("www") && (hostname !== "www.likho.site")){
