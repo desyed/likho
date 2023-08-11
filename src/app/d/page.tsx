@@ -31,6 +31,10 @@ export default function SiteHomePage() {
             try{
                 const res = await getDomainData(domain || "");
                 // @ts-ignore
+                if(!res?.subdomain){
+                    window.location.href = "https://likho.site"
+                }
+                // @ts-ignore
                 res && setData(res?.subdomain?.project?.posts?.edges || []);
             }catch (e){
                 console.log(e)
