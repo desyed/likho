@@ -22,20 +22,21 @@ export default function SiteHomePage() {
 
     const [data, setData] = React.useState<Post[]>([]);
 
-    const domain = getValidSubdomain(window?.location?.hostname);
 
-    const getDomainDetails = async () => {
-        try{
-            const res = await getDomainData(domain || "");
-            // @ts-ignore
-            res && setData(res?.subdomain?.project?.posts?.edges || []);
-        }catch (e){
-            console.log(e)
-            window.location.href = "https://likho.site"
-        }
-    }
 
     useEffect(() => {
+        const domain = getValidSubdomain(window?.location?.hostname);
+
+        const getDomainDetails = async () => {
+            try{
+                const res = await getDomainData(domain || "");
+                // @ts-ignore
+                res && setData(res?.subdomain?.project?.posts?.edges || []);
+            }catch (e){
+                console.log(e)
+                window.location.href = "https://likho.site"
+            }
+        }
         getDomainDetails()
     }, []);
 
@@ -82,9 +83,9 @@ export default function SiteHomePage() {
                     More stories <b>&middot;</b>
                 </h2>}
                 <div className="mx-auto flex flex-wrap gap-3">
-                    {data.length > 1 && data.map(({node: {name, thumbnail}})=>(
+                    {data.length > 1 && data.map(({node: { name, thumbnail}}, i)=>(
 
-                    <div className="relative rounded-lg overflow-hidden shadow-md w-[200px]">
+                    <div key={i} className="relative rounded-lg overflow-hidden shadow-md w-[200px]">
                         <img className="shadow-xl h-[240px] w-full  inline-block object-cover"
                              src={thumbnail || "/thumb-placeholder.png"} alt="banner.png" title="banner.png"/>
                         <div className="absolute px-3 w-full h-20 bottom-0 left-0 bg-gradient-to-t from-gray-300 to-transparent">
