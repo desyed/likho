@@ -8,6 +8,7 @@ import {redirect} from "next/navigation";
 
 const inter = Inter({ subsets: ['latin'] })
 
+// TODO: Add Open Graph and Twitter Card meta tags
 export const metadata: Metadata = {
   title: 'Likho: New Generation of Blogging Platform',
   description: 'Generate your blog site with ease. Play couple of minutes and boom!!!',

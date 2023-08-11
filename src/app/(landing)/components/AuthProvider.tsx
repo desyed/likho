@@ -1,7 +1,7 @@
 "use client"
 
 import { getProviders, signIn } from 'next-auth/react';
-import React, { useEffect, useState } from 'react'
+import React, {Suspense, useEffect, useState} from 'react'
 import {fetchToken} from "@/lib/actions";
 import {User2} from "lucide-react";
 
@@ -37,11 +37,11 @@ const AuthProviders = () => {
 
     if (providers) {
         return (
-            <div>
+            <Suspense fallback={<p>...</p>}>
                 {Object.values(providers).map((provider: Provider, i) => (
                     <button className="bg-black text-white rounded px-5 py-1 text-sm flex gap-2 items-center" key={i} onClick={() => signIn(provider?.id,{callbackUrl: '/playground'})} ><User2 width={15} />Sign In</button>
                 ))}
-            </div>
+            </Suspense>
         )
     }
 }

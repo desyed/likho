@@ -147,6 +147,7 @@ export const getProjectsOfUserQuery = `
             node {
               name
               code
+              logo
               liveSiteUrl
               subdomain {
                 name

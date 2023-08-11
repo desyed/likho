@@ -2,8 +2,6 @@ import '../globals.css'
 import "../prosemirror.css";
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import Sidebar from "@/app/(dashboard)/components/sidebar";
-import ProjectContainer from "@/app/(dashboard)/components/projectContainer";
 import {getCurrentUser} from "@/lib/session";
 import {redirect} from "next/navigation";
 

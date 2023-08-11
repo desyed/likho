@@ -65,7 +65,7 @@ const user = g.model('User', {
 // @ts-ignore
 const Subdomain = g.model('Subdomain', {
     name: g.string().unique(),
-    projects: g.relation(project).optional().list().optional()
+    project: g.relation(project).optional()
 }).search().auth((rules) => {
     rules.public().read()
     rules.private().create().delete().update()

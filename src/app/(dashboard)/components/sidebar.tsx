@@ -12,29 +12,24 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState} from "react";
-import {createNewProject, createNewPost, fetchToken, getUserProjects} from "@/lib/actions";
+import {createNewProject, fetchToken, getUserProjects} from "@/lib/actions";
 import {toast} from "sonner";
 import {useParams} from "next/navigation";
 import {setItem, setToken} from "@/lib/services/storage";
 import ProjectModal from "@/app/(dashboard)/components/project-create-modal";
-import PostModal from "@/app/(dashboard)/components/post-create-modal";
-import {slugify} from "@/lib/utils";
-import {getItem} from "@/lib/services/storage";
 
 const Sidebar = () => {
 
     const [projectFromError, setProjectFromError] = useState(false);
     const [projectCreateLoading, setProjectCreateLoading] = useState(false);
     const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
-
-    const [pageFromError, setPageFromError] = useState(false);
-    const [pageThumbnail, setPageThumbnail] = useState<string | null>(null);
-    const [pageCreateLoading, setPageCreateLoading] = useState(false);
-    const [isPageModalOpen, setIsPageModalOpen] = useState(false);
+    const [logo, setLogoUrl] = useState<string | null>();
 
     const {project: projectCode} = useParams()
-    const closeProjectModal = () => setIsProjectModalOpen(false);
-    const closePageModal = () => setIsPageModalOpen(false);
+    const closeProjectModal = () => {
+        setIsProjectModalOpen(false);
+        // setLogoUrl(null);
+    };
 
     const [projects, setProjects] = useState([]);
     const [posts, setPosts] = useState([]);
@@ -62,7 +57,7 @@ const Sidebar = () => {
             setProjectFromError(false);
             try {
                 // @ts-ignore
-                tokenInfo &&  await createNewProject(name, tokenInfo?.id, tokenInfo?.token );
+                tokenInfo &&  await createNewProject({name, logo}, tokenInfo?.id, tokenInfo?.token );
                 setProjectCreateLoading(false);
                 setIsProjectModalOpen(false);
                 toast.success("Project created successfully");
@@ -78,37 +73,7 @@ const Sidebar = () => {
         }
 
     }
-    // const pageSubmit = async (e: any) => {
-    //     e.preventDefault();
-    //     setPageCreateLoading(true);
-    //     const formValues = {
-    //         name: e.target.name.value,
-    //         slug: slugify(e.target.name.value)+ "-" + Math.floor(Math.random() * 100),
-    //         description: e.target.description.value,
-    //         thumbnail: pageThumbnail,
-    //         content: "",
-    //     }
-    //     if(formValues.name){
-    //         setPageFromError(false);
-    //         formValues.content = "## Hello World";
-    //         try {
-    //             // @ts-ignore
-    //             tokenInfo &&  await createNewPost(formValues, tokenInfo?.id, getItem('proj'), tokenInfo?.token );
-    //             setPageCreateLoading(false);
-    //             setIsPageModalOpen(false);
-    //             toast.success("Page created successfully");
-    //             getPageInfo();
-    //         }
-    //         catch (e) {
-    //             setPageCreateLoading(false);
-    //             toast.error("Something went wrong");
-    //         }
-    //     }else {
-    //         setPageFromError(true);
-    //         setPageCreateLoading(false);
-    //     }
-    //
-    // }
+
 
     useEffect( () => {
         getPageInfo();
@@ -136,7 +101,10 @@ const Sidebar = () => {
                 </Link>
             ))}
 
-            <p onClick={() => setIsProjectModalOpen(true)}
+            <p onClick={() => {
+                setIsProjectModalOpen(true);
+                setLogoUrl(null);
+            }}
                 className="cursor-pointer flex gap-2 font-light text-gray-600 text-xs items-center hover:text-black">
                 <PlusCircle width={15}/><b>Create Project</b>
             </p>
@@ -154,11 +122,6 @@ const Sidebar = () => {
                         <FileSignature width={15}/><b>{name}</b>
                     </p>
                 </Link>)}
-
-                {/*<p onClick={() => setIsPageModalOpen(true)}*/}
-                {/*   className="cursor-pointer flex gap-2 font-light text-gray-600 text-xs items-center hover:text-black">*/}
-                {/*    <PlusCircle width={15}/><b>New Posts</b>*/}
-                {/*</p>*/}
 
             </>)}
 
@@ -190,14 +153,12 @@ const Sidebar = () => {
 
             <Link href="/">
                 <p className="flex gap-2 font-light text-gray-600 text-sm items-center hover:text-black">
-                    <Twitter width={15}/><b>Follow</b>
+                    <Twitter width={15}/><b>Follow on Twitter</b>
                 </p>
             </Link>
         </div>
     {/*  project dialog  */}
-    <ProjectModal isOpen={isProjectModalOpen} onClose={closeProjectModal} onSubmit={projectSubmit} validated={projectFromError} loading={projectCreateLoading}/>
-    {/*  page dialog  */}
-    {/*<PostModal isOpen={isPageModalOpen} onFileChange={(key, value)=> setPageThumbnail(value)} onClose={closePageModal} onSubmit={pageSubmit} validated={pageFromError} loading={pageCreateLoading}/>*/}
+    <ProjectModal isOpen={isProjectModalOpen} onFileChange={(k, value) => setLogoUrl(value)} onClose={closeProjectModal} onSubmit={projectSubmit} validated={projectFromError} loading={projectCreateLoading}/>
     </div>
 }
 

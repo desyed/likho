@@ -66,36 +66,32 @@ export const uploadImage = async (imagePath: string) => {
 };
 
 
-export const createNewProject = async (name: string, userId: string, token: string) => {
-        const code =  nanoid(6);
-        const subdomain = slugify(name) + "-" + slugify(code);
-        let subdomainRes: any;
-        try {
-            subdomainRes = await createSubDomain(subdomain, userId, token)!;
+export const createNewProject = async (formValue: ProjectForm, userId: string, token: string) => {
+    const code =  nanoid(6);
+    client.setHeader("Authorization", `Bearer ${token}`);
+    const name = formValue?.name;
+    const description = formValue?.description || null;
+    let logo;
 
-        } catch (err) {
-            return err;
-        }
-
-    // const imageUrl = await uploadImage(form.image);
-
-        client.setHeader("Authorization", `Bearer ${token}`);
-
+    if (formValue?.logo && !isValidUrl(formValue.logo)) {
+        const res = await uploadImage(formValue.logo);
+        logo = res?.secure_url;
+    }else {
+        logo = formValue?.logo && null;
+    }
 
     const variables: any = {
             input: {
                 name,
+                logo,
+                description,
                 code,
                 createdBy: {
                     link: userId
                 },
-                subdomain: {
-                    link: subdomainRes?.subdomainCreate?.subdomain.id || ""
-                }
             }
         };
-
-        return await makeGraphQLRequest(createProjectMutation, variables);
+    return await makeGraphQLRequest(createProjectMutation, variables);
 };
 
 export const updateProject = async (form: ProjectForm, projectId: string, token: string) => {
@@ -230,11 +226,12 @@ export const updatePost = async ( data: any, token: string) => {
         };
     }
 }
-export const createSubDomain = async ( subdomain: string, userId: string, token: string) => {
+
+export const createSubDomain = async ( subdomain: string, projectId: string, token: string) => {
     client.setHeader("Authorization", `Bearer ${token}`);
 
     try {
-        return await makeGraphQLRequest(createSubDomainMutation, { input: { name: subdomain } });
+        return await makeGraphQLRequest(createSubDomainMutation, { input: {name: subdomain, project: {link: projectId}}});
     } catch (error: any) {
         if (error.code === "P2002") {
             return {
@@ -247,35 +244,4 @@ export const createSubDomain = async ( subdomain: string, userId: string, token:
         }
     }
 };
-//
-// export const updateSite = withSiteAuth(
-//     async (formData: FormData, site: any, key: string) => {
-//         const value = formData.get(key) as string;
-//
-//         try {
-//             const response = new Promise(()=> {});
-//             return response;
-//         } catch (error: any) {
-//             if (error.code === "P2002") {
-//                 return {
-//                     error: `This ${key} is already taken`,
-//                 };
-//             } else {
-//                 return {
-//                     error: error.message,
-//                 };
-//             }
-//         }
-//     },
-// );
-//
-// export const deleteSite = withSiteAuth(async (_: FormData, site: any) => {
-//     try {
-//         const response = new Promise(()=> {});
-//         return response;
-//     } catch (error: any) {
-//         return {
-//             error: error.message,
-//         };
-//     }
-// });
+

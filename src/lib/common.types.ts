@@ -73,6 +73,10 @@ export interface TokenInterface{
 
 export interface ProjectForm {
     name: string;
+    logo?: string;
+    description?: string;
+    liveSiteUrl?: string;
+    code?: string;
 }
 export interface PostForm {
     name: string;

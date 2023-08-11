@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/session";
 import AuthProvider from "@/app/(landing)/components/AuthProvider";
 import LogOutButton from "@/app/(landing)/components/LogOutButton";
 import {redirect} from "next/navigation";
+import {Suspense} from "react";
 
 
 const Navbar = async () => {
@@ -32,7 +33,9 @@ const Navbar = async () => {
                 </div>
 
                 <div className='flex items-center gap-2 text-sm'>
+                    <Suspense fallback={<p>...</p>}>
                     {session?.user ? (
+
                         <>
                             {session?.user?.image &&
                                 <Image src={session?.user?.image} alt={session.user.name} width={25} height={25}
@@ -43,8 +46,9 @@ const Navbar = async () => {
                             </div>
                         </>
                     ) : (
-                        <AuthProvider />
+                            <AuthProvider />
                     )}
+                    </Suspense>
                 </div>
             </div>
         </nav>
