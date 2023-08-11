@@ -111,7 +111,12 @@ const Page = () => {
     getPageInfo();
   },[])
   return <div className="pt-5">
-    <h1 className="capitalize text-sm flex items-center font-medium gap-2"><ActivitySquare width={15}/> <span className="">{project?.project.name}</span></h1>
+    {project?.project?.logo ? <div className="flex items-center gap-2 mb-5">
+      <img src={project?.project?.logo} alt="" className="w-10 h-10 border rounded-full"/>
+        </div> : <div className="flex items-center gap-2 mb-5">
+        <div className="w-10 h-10 rounded-full bg-gray-200"/>
+        </div>}
+    <h1 className="capitalize text-sm flex items-center font-medium gap-2"><span className="">{project?.project.name}</span></h1>
     <p className="text-sm text-gray-500 ">Everything here is related to this particular project. So, play with it.</p>
     {project?.project.subdomain ? <div className="mt-5 ">
         <Link  className="hover:bg-gray-800 bg-black px-3 py-1 rounded text-white text-xs inline-flex gap-1 items-center" target="_blank" href={`https://${project?.project?.subdomain?.name}.likho.site`}>

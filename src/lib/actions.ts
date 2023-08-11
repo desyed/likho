@@ -6,7 +6,7 @@ import {
     createUserMutation,
     deleteProjectMutation, getPostBySlugQuery, getProjectByCodeQuery,
     getProjectByIdQuery,
-    getProjectsOfUserQuery,
+    getProjectsOfUserQuery, getSubomainDetailsQuery,
     getUserQuery,
     projectsQuery, updatePostMutation,
     updateProjectMutation
@@ -200,6 +200,10 @@ export const getPostBySlug = async (slug: string) => {
 
 export const updatePost = async ( data: any, token: string) => {
 
+    if(!data?.slug){
+        return;
+    }
+
     try {
         const formData: UpdateForm = {...data};
 
@@ -209,7 +213,6 @@ export const updatePost = async ( data: any, token: string) => {
         }
         const { name, slug, description, thumbnail, content, published} = formData;
         client.setHeader("Authorization", `Bearer ${token}`);
-
         const variables: any = {
             by: {
                 slug
@@ -244,4 +247,13 @@ export const createSubDomain = async ( subdomain: string, projectId: string, tok
         }
     }
 };
+export const getDomainData = async (name: string) => {
+    try {
+        return await makeGraphQLRequest(getSubomainDetailsQuery, { name });
+    } catch (error: any) {
+        return {
+            error: error.message,
+        };
+    }
+}
 

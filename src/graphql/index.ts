@@ -245,3 +245,29 @@ export const getPostBySlugQuery = `
     }
   }
 `;
+export const getSubomainDetailsQuery = `
+  query GetSubdomain($name: String!) {
+    subdomain(by: {name: $name}) {
+    name
+    project {
+      name
+      code
+      logo
+      description
+      posts(first: 100) {
+        edges {
+          node {
+            name
+            slug
+            description
+            content
+            thumbnail
+            type
+            published
+          }
+        }
+      }
+    }
+  }
+  }
+`;

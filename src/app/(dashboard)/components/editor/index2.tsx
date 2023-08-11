@@ -6,7 +6,7 @@ import { TiptapEditorProps } from "./props";
 import { TiptapExtensions } from "./extensions";
 import { useDebounce } from "use-debounce";
 import { useCompletion } from "ai/react";
-import { toast } from "sonner";
+import {toast, Toaster} from "sonner";
 import va from "@vercel/analytics";
 import TextareaAutosize from "react-textarea-autosize";
 import { updatePost } from "@/lib/actions";
@@ -15,6 +15,7 @@ import { ExternalLink } from "lucide-react";
 import {EditorBubbleMenu} from "@/app/(dashboard)/components/editor/components";
 import {usePathname} from "next/navigation";
 import {getTokenOnly} from "@/lib/services/storage";
+import UploadImage from "@/app/(dashboard)/components/editor/components/uploadImage";
 
 interface Post {
   id: string;
@@ -52,8 +53,8 @@ export default function Editor({ post }: { post: Post }) {
       return;
     }
     startTransitionSaving(async () => {
-      await updatePost(debouncedData, getTokenOnly());
-      console.log(debouncedData)
+      await updatePost({...post, ...debouncedData}, getTokenOnly())
+
     });
   }, [debouncedData, post]);
 
@@ -202,14 +203,11 @@ export default function Editor({ post }: { post: Post }) {
                 <ExternalLink className="h-4 w-4" />
               </a>
           )}
-          <div className="rounded-lg bg-stone-100 px-2 py-1 text-sm text-stone-400 dark:bg-stone-800 dark:text-stone-500">
+          <div className="rounded-lg bg-stone-100 px-2 py-1 text-xs text-stone-400 dark:bg-stone-800 dark:text-stone-500">
             {isPendingSaving ? "Saving..." : "Saved"}
           </div>
           <button
               onClick={() => {
-                const formData = new FormData();
-                console.log(data.published, typeof data.published);
-                formData.append("published", String(!data.published));
                 startTransitionPublishing(async () => {
                   // await updatePostMetadata(formData, post.id, "published").then(
                   //     () => {
@@ -224,7 +222,7 @@ export default function Editor({ post }: { post: Post }) {
                 });
               }}
               className={cn(
-                  "flex h-7 w-24 items-center justify-center space-x-2 rounded-lg border text-sm transition-all focus:outline-none",
+                  "flex py-1 px-3 items-center justify-center space-x-2 rounded-lg border text-xs transition-all focus:outline-none",
                   isPendingPublishing
                       ? "cursor-not-allowed border-stone-200 bg-stone-100 text-stone-400 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300"
                       : "border border-black bg-black text-white hover:bg-white hover:text-black active:bg-stone-100 dark:border-stone-700 dark:hover:border-stone-200 dark:hover:bg-black dark:hover:text-white dark:active:bg-stone-800",
@@ -234,11 +232,12 @@ export default function Editor({ post }: { post: Post }) {
             {isPendingPublishing ? (
                 <p>loading...</p>
             ) : (
-                <p>{data?.published ? "Unpublish" : "Publish"}</p>
+                <p>{data?.published ? "Published" : "Unpublished"}</p>
             )}
           </button>
         </div>
         <div className="mb-5 flex flex-col space-y-3 border-b border-stone-200 pb-5 dark:border-stone-700">
+          {/*<UploadImage value={post?.thumbnail || ""} name="thumbnail" onChange={(value, name)=>{}} label="Post Thumbnail"/>*/}
           <input
               type="text"
               placeholder="Write your post title here"
@@ -256,6 +255,7 @@ export default function Editor({ post }: { post: Post }) {
         </div>
         {editor && <EditorBubbleMenu editor={editor} />}
         <EditorContent editor={editor} />
+        <Toaster/>
       </div>
   );
 }

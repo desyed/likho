@@ -1,53 +1,50 @@
+"use client";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import {placeholderBlurhash, toDateString} from "@/lib/utils";
+import {getValidSubdomain, placeholderBlurhash, toDateString} from "@/lib/utils";
 import {Github} from "lucide-react";
-import React from "react";
+import React, {useEffect} from "react";
+import {getDomainData} from "@/lib/actions";
 
 type Post = {
-    slug: string;
-    title: string;
-    description: string;
-    imageBlurhash: string | null;
-    isBlurhash: boolean;
-    image: string | null;
-    createdAt: Date;
-}
-type Data = {
-    user: {
+    node: {
+        slug: string;
         name: string;
-        image: string | null;
+        description: string;
+        content: string;
+        thumbnail: string | null;
+        createdAt: Date;
     }
 }
-export default async function SiteHomePage() {
 
-    const posts: Post[] = [{
-        slug: "test",
-        title: "test",
-        description: "test",
-        isBlurhash: false,
-        image: null,
-        imageBlurhash: null,
-        createdAt: new Date,
-    },{
-        slug: "test",
-        title: "test",
-        description: "test",
-        isBlurhash: false,
-        image: null,
-        imageBlurhash: null,
-        createdAt: new Date,
-    }];
-    const data:Data = {user: {
-        name: "test",
-        image: null,
+export default function SiteHomePage() {
 
-        }};
+    const [data, setData] = React.useState<Post[]>([]);
 
-    if (!data) {
-        notFound();
+    const domain = getValidSubdomain(window?.location?.hostname);
+
+    const getDomainDetails = async () => {
+        try{
+            const res = await getDomainData(domain || "");
+            // @ts-ignore
+            res && setData(res?.subdomain?.project?.posts?.edges || []);
+        }catch (e){
+            console.log(e)
+            window.location.href = "https://likho.site"
+        }
     }
+
+    useEffect(() => {
+        getDomainDetails()
+    }, []);
+
+
+
+
+
+
+
 
     return (
         <>
@@ -65,13 +62,13 @@ export default async function SiteHomePage() {
                             </div>
                         </div>
                         {/* featured blog / more recent one */}
-                        { posts.length > 0 && (
+                        { data.length > 0 && (
                                 <div className="relative rounded-lg overflow-hidden shadow-md">
                                     <img className="shadow-xl h-[300px] w-full  inline-block object-cover"
-                                         src="/thumb-placeholder.png" alt="banner.png" title="banner.png"/>
+                                         src={data[0]?.node?.thumbnail ? data[0]?.node?.thumbnail : "/thumb-placeholder.png"} alt="banner.png" title="banner.png"/>
                                     <div className="absolute w-full h-20 bottom-0 left-0 bg-gradient-to-t from-gray-300 to-transparent">
                                         <Link href={'/'}>
-                                            <h1 className="text-2xl hover:text-orange-500 font-medium mt-4">This the the very Title of this post</h1>
+                                            <h1 className="text-2xl hover:text-orange-500 font-medium mt-4">{data[0]?.node?.name ? data[0]?.node?.name : "No Title"}</h1>
                                         </Link>
                                     </div>
                                 </div>
@@ -81,22 +78,23 @@ export default async function SiteHomePage() {
             </div>
         <div>
             <div className="w-[90%] max-w-[1200px] mx-auto mb-5">
-                {posts.length > 1 && <h2 className="mb-10 font-title text-4xl dark:text-white md:text-xl">
+                {data.length > 1 && <h2 className="mb-10 font-title text-4xl dark:text-white md:text-xl">
                     More stories <b>&middot;</b>
                 </h2>}
-            {posts.length > 1 && (
-                <div className="mx-auto flex flex-wrap">
-                    <div className="relative rounded-lg overflow-hidden shadow-md w-1/4">
+                <div className="mx-auto flex flex-wrap gap-3">
+                    {data.length > 1 && data.map(({node: {name, thumbnail}})=>(
+
+                    <div className="relative rounded-lg overflow-hidden shadow-md w-[200px]">
                         <img className="shadow-xl h-[240px] w-full  inline-block object-cover"
-                             src="/thumb-placeholder.png" alt="banner.png" title="banner.png"/>
+                             src={thumbnail || "/thumb-placeholder.png"} alt="banner.png" title="banner.png"/>
                         <div className="absolute px-3 w-full h-20 bottom-0 left-0 bg-gradient-to-t from-gray-300 to-transparent">
                             <Link href={'/'}>
-                                <h1 className="text-md font-medium mt-4">This the the very Title of this post</h1>
+                                <h1 className="text-md font-medium mt-4">{name || 'No Title'}</h1>
                             </Link>
                         </div>
                     </div>
+                    ))}
                 </div>
-            )}
             </div>
         </div>
 
