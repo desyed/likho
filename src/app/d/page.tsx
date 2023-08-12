@@ -98,8 +98,8 @@ export default function SiteHomePage() {
                 </h2>}
                 <div className="mx-auto flex flex-wrap gap-3">
                     {data.length > 1 && data.map(({node: {name, thumbnail, slug}}, i) => (
-                        <Link href={`/${slug}`}>
-                            <div key={i} className="relative rounded-lg overflow-hidden shadow-md w-[200px]">
+                        <Link key={i} href={`/${slug}`}>
+                            <div  className="relative rounded-lg overflow-hidden shadow-md w-[200px]">
                                 <img className="shadow-xl h-[240px] w-full  inline-block object-cover"
                                      src={thumbnail || "/placeholder.png"} alt="banner.png" title="banner.png"/>
                                 <div className="absolute px-3 w-full h-20 bottom-0 left-0 bg-gradient-to-t from-gray-300 to-transparent">
