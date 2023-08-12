@@ -63,7 +63,7 @@ export default function SiteHomePage() {
                     <div className="flex pb-5 items-center justify-between">
                         <div className="">
                             <Link href="/">
-                                <img className="h-5" src="/likho.png" alt="logo"/>
+                                <img className="h-8" src="/likho.png" alt="logo"/>
                             </Link>
                         </div>
                         <div>
@@ -75,15 +75,12 @@ export default function SiteHomePage() {
                     </div>
                     {/* featured blog / more recent one */}
                     {data.length > 0 && (<Link href={`/${data[0]?.node?.slug}`}>
-                            <div className="relative rounded-lg overflow-hidden shadow-md">
-                                <img className="shadow-xl h-[300px] w-full  inline-block object-cover"
+                            <div className="">
+                                <img className="h-[300px] inline-block object-cover rounded-2xl border w-full"
                                      src={data[0]?.node?.thumbnail ? data[0]?.node?.thumbnail : "/thumb-placeholder2.png"}
                                      alt="banner.png" title="banner.png"/>
-                                <div
-                                    className="absolute w-full h-20 bottom-0 left-0 bg-gradient-to-t from-gray-300 to-transparent">
-
-                                        <h1 className="text-2xl hover:text-orange-500 font-medium mt-4">{data[0]?.node?.name ? data[0]?.node?.name : "No Title"}</h1>
-
+                                <div className="">
+                                    <h1 className="border-l-4 font-medium hover:text-orange-500 mt-4 pl-4 text-3xl text-left">{data[0]?.node?.name ? data[0]?.node?.name : "No Title"}</h1>
                                 </div>
                             </div>
                         </Link>
@@ -99,11 +96,11 @@ export default function SiteHomePage() {
                 <div className="mx-auto flex flex-wrap gap-3">
                     {data.length > 1 && data.map(({node: {name, thumbnail, slug}}, i) => (
                         <Link key={i} href={`/${slug}`}>
-                            <div  className="relative rounded-lg overflow-hidden shadow-md w-[200px]">
-                                <img className="shadow-xl h-[240px] w-full  inline-block object-cover"
+                            <div  className="w-[380px]">
+                                <img className="shadow-xl h-[240px] w-full rounded-lg inline-block object-cover"
                                      src={thumbnail || "/placeholder.png"} alt="banner.png" title="banner.png"/>
-                                <div className="absolute px-3 w-full h-20 bottom-0 left-0 bg-gradient-to-t from-gray-300 to-transparent">
-                                        <h1 className="text-md font-medium mt-4">{name || 'No Title'}</h1>
+                                <div className="border-l-4 mt-5 pl-4">
+                                        <h1 className="text-md font-medium">{name || 'No Title'}</h1>
                                 </div>
                             </div>
                         </Link>
