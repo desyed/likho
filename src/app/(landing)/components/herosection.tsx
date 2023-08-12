@@ -10,8 +10,8 @@ const Herosection = async () => {
         <div className="container flex flex-wrap">
             <div className="flex justify-center items-center sm:w-2/3">
                 <div>
-                    <h1 className=" mt-5 bg-clip-text bg-gradient-to-br font-extrabold from-[#FFD89B] jsx-bbe7df302f14d4d5   leading-[1.2em]  text-3xl text-left text-transparent to-[#19547B] tracking-[0.em] uppercase  z-10">
-                        AI Powered. Notion Styled. Multi-tenant. No-code Website Builder with  <span className={"bg-gradient-to-r from-red-500 to-orange-500 text-white px-3"}>Grafbase</span></h1>
+                    <h1 className=" mt-5  font-extrabold  leading-[1.2em]  text-3xl text-left  tracking-[0.em] uppercase  z-10">
+                        AI Powered. Notion Styled. Multi-tenant. No-code Website Builder with  <span className={"rounded bg-gradient-to-r from-red-500 to-orange-500 text-white px-3"}>Grafbase</span></h1>
 
                     <p className="text-lg text-gray-600 mt-5 leading-0.5">
                         Are you tired of spending countless hours creating and maintaining your website? Say goodbye to overwork and welcome the future of website building with LIKHO! Our revolutionary platform harnesses the power of AI and Grafbase, allowing you to effortlessly create captivating, powerful, and customizable websites without writing a single line of code.
