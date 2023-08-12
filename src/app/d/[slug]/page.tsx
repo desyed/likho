@@ -57,7 +57,7 @@ const getPostData  = async () => {
                         src={data?.thumbnail || "/placeholder.png"}
                         alt={data?.name} title={data?.name}/>
 
-                  <h1 className="text-3xl font-bold mt-20">{data?.name}</h1>
+                  <h1 className="text-3xl font-bold mt-5">{data?.name}</h1>
 
               </div>
           </div>
