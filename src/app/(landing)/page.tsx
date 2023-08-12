@@ -8,7 +8,7 @@ import {headers} from "next/headers";
 export default function Home() {
     console.log(headers().get('host'))
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-cover bg-bottom bg-[url('/bg-post.jpg')] bg-no-repeat">
+    <div className="flex min-h-screen flex-col items-center justify-center ">
         {/*  hero section*/}
         <Herosection/>
         {/*  how it works section*/}

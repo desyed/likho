@@ -46,6 +46,7 @@
     "highlight.js": "^11.8.0",
     "jsonwebtoken": "^9.0.1",
     "lucide-react": "^0.263.1",
+    "moment": "^2.29.4",
     "next": "13.4.12",
     "next-auth": "^4.22.4",
     "next-mdx-remote": "^4.4.1",
