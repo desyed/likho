@@ -14,10 +14,7 @@ export async function middleware(req: NextRequest) {
   res.headers.append('Access-Control-Allow-Credentials', "true")
   res.headers.append('Access-Control-Allow-Origin', 'http://localhost:3000, https://www.likho.site, https://likho.site')
   res.headers.append('Access-Control-Allow-Methods', 'GET,DELETE,PATCH,POST,PUT')
-  res.headers.append(
-      'Access-Control-Allow-Headers',
-      'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization, x-api-key',
-  )
+  res.headers.append('Access-Control-Allow-Headers', '*')
 
 
   // Clone the URL
