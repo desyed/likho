@@ -26,7 +26,7 @@ const Features = () => {
                 <div className="md:w-1/4 p-5">
                     <div className="mb-2 text-2xl">🏆</div>
                     <h2 className="uppercase font-bold text-gray-600 mb-2">No-Code</h2>
-                    <p className="text-sm">Coding skills are no longer a barrier to building a stunning website. LIKHO empowers you to design, customize, and update your website through an intuitive drag-and-drop interface. Say goodbye to manual coding and hello to efficiency!</p>
+                    <p className="text-sm">Coding skills are no longer a barrier to building a stunning website. LIKHO empowers you to design, customize, and update your website through an intuitive interface. Say goodbye to manual coding and hello to efficiency!</p>
                 </div>
             </div>
         </div>)

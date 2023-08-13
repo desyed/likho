@@ -135,7 +135,6 @@ const Page = () => {
     </div>}
     <hr className="my-10"/>
 
-
     <h4 className="uppercase text-gray-600 text-xs mb-5 font-bold">Your Blogs</h4>
     <div className="hover:bg-gray-100  cursor-pointer px-3 py-1 border-b border-dotted mb-5" >
       <p onClick={() => {
@@ -147,7 +146,7 @@ const Page = () => {
     <div className="flex gap-3 flex-wrap">
       {project?.project?.posts?.edges?.length > 0 ? project?.project?.posts?.edges?.map((page: any, i: number) => (
             <Link href={`/playground/${code}/${page?.node?.slug}`} key={i}>
-            <div className=" hover:bg-gray-50 border rounded relative overflow-hidden " key={i}>
+            <div className=" hover:bg-gray-50 border rounded relative overflow-hidden w-[200px]" key={i}>
               <div className="bg-gray-100 h-[100px] w-[200px] overflow-hidden">
                 {page?.node?.thumbnail ? <img alt={page?.node?.name} src={page?.node?.thumbnail} className="w-full h-full object-cover"/>:
                 <div className="h-full w-full flex justify-center items-center text-gray-600"><ImageIcon/></div>}
