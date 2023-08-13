@@ -82,6 +82,7 @@ export default function SiteHomePage() {
                                      alt="banner.png" title="banner.png"/>
                                 <div className="">
                                     <h1 className="border-l-4 font-medium hover:text-orange-500 mt-4 pl-4 text-3xl text-left">{data[0]?.node?.name ? data[0]?.node?.name : "No Title"}</h1>
+                                <p className="text-left pl-5">{data[0]?.node?.description}</p>
                                 </div>
                             </div>
                         </Link>

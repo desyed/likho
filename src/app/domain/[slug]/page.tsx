@@ -58,6 +58,7 @@ const getPostData  = async () => {
                         alt={data?.name} title={data?.name}/>
 
                   <h1 className="text-3xl font-bold mt-5">{data?.name}</h1>
+                  <p>{data?.description}</p>
 
               </div>
           </div>
