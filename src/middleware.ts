@@ -23,9 +23,9 @@ export async function middleware(req: NextRequest) {
   if (subdomain) {
     // If subdomain is valid, rewrite the URL
     if(url.pathname === "/"){
-        return NextResponse.rewrite(new URL(`/d`, req.url));
+        return NextResponse.rewrite(new URL(`/domain`, req.url));
     }else {
-        return NextResponse.rewrite(new URL(`/d/*`, req.url));
+        return NextResponse.rewrite(new URL(`/domain/*`, req.url));
     }
   }
 
