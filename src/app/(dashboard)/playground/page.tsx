@@ -4,7 +4,7 @@ import {Suspense, useEffect, useState} from "react";
 import {createNewProject, fetchToken, getUserProjects} from "@/lib/actions";
 import {setToken} from "@/lib/services/storage";
 import Link from "next/link";
-import {Plus} from "lucide-react";
+import {Pencil, Plus} from "lucide-react";
 import {useParams} from "next/navigation";
 import {toast, Toaster} from "sonner";
 import ProjectModal from "../components/project-create-modal";
@@ -33,6 +33,7 @@ export default function Page() {
     const [projectFromError, setProjectFromError] = useState(false);
     const [projectCreateLoading, setProjectCreateLoading] = useState(false);
     const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+    const [isProjectLoading, setIsProjectLoading] = useState(true);
     const [logo, setLogoUrl] = useState<string | null>();
 
     const closeProjectModal = () => {
@@ -73,11 +74,16 @@ export default function Page() {
             const userProjects = await getUserProjects( res.id);
             // @ts-ignore
             setProjects(userProjects?.user?.projects?.edges ||[]);
+            setIsProjectLoading(false);
         }
     }
     useEffect( () => {
         getPageInfo();
     },[])
+
+    if(isProjectLoading) return <div className="pt-5 flex items-center flex-col gap-3 justify-center h-[80vh] text-orange-500">
+        <div className="w-12 h-12 rounded-full animate-spin border border-dashed border-orange-500 border-t-transparent"></div>
+    </div>
 
   return (
         <div className="pt-5">
@@ -88,6 +94,13 @@ export default function Page() {
 
 
             <h4 className="uppercase text-gray-600 text-xs mb-5 font-bold">Your Projects</h4>
+            <div className="hover:bg-gray-100  cursor-pointer px-3 py-1 border-b border-dotted mb-5" >
+                <p onClick={() => {
+                    setIsProjectModalOpen(true);
+                    setLogoUrl(null);
+                }}
+                   className="text-xs flex gap-1 items-center text-orange-500"><Plus width={15}/> Create Project</p>
+            </div>
             <div className="flex gap-5 flex-wrap">
                 {projects.map((project, i) => (
                     <Link href={`/playground/${project?.node?.code}`} key={i}>
@@ -103,14 +116,6 @@ export default function Page() {
                         </div>
                     </Link>
                 ))}
-                <div
-                    onClick={() => {
-                        setIsProjectModalOpen(true);
-                        setLogoUrl(null);
-                    }}
-                    className="bg-gray-50 hover:bg-gray-100 rounded cursor-pointer p-5 border border-dotted flex items-center justify-center" >
-                    <h5 className="text-xs font-bold flex gap-1 items-center text-gray-600"><Plus width={15}/> Create a Project</h5>
-                </div>
             </div>
 
             {/*  project dialog  */}

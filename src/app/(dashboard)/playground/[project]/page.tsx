@@ -5,7 +5,7 @@ import {createNewPost, createSubDomain, fetchToken, getProjectByCode, getUserPro
 import {getItem, setItem, setToken} from "@/lib/services/storage";
 import {useEffect, useState} from "react";
 import {TokenInfo} from "@/lib/common.types";
-import {redirect, useParams} from "next/navigation";
+import {useParams} from "next/navigation";
 import {toast, Toaster} from "sonner";
 import PostCreateModal from "@/app/(dashboard)/components/post-create-modal";
 import {slugify} from "@/lib/utils";
@@ -31,6 +31,7 @@ const Page = () => {
   const [postCreateLoading, setPostCreateLoading] = useState(false);
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [subdomainLoading, setSubdomainLoading] = useState(false);
+  const [isPostLoading, setIsPostLoading] = useState(true);
   const [isSubdomainModalOpen, setIsSubdomainModalOpen] = useState(false);
 
   const {project: code} = useParams();
@@ -45,6 +46,7 @@ const Page = () => {
         setProject(project as Project);
         // @ts-ignore
         setItem('proj', project?.project?.id)
+        setIsPostLoading(false);
       }catch (e) {
         toast.error("Something went wrong");
       }
@@ -70,11 +72,11 @@ const Page = () => {
         setPostCreateLoading(false);
         setIsPostModalOpen(false);
         toast.success("Post created successfully");
-        // getPageInfo();
+        getPageInfo();
       }
       catch (e) {
         setPostCreateLoading(false);
-        toast.error("Something went wrong");
+        // toast.error("Something went wrong");
       }
     }else {
       setPostFromError(true);
@@ -110,6 +112,11 @@ const Page = () => {
   useEffect( () => {
     getPageInfo();
   },[])
+
+  if(isPostLoading) return <div className="pt-5 flex items-center flex-col gap-3 justify-center h-[80vh] text-orange-500">
+    <div className="w-12 h-12 rounded-full animate-spin border border-dashed border-orange-500 border-t-transparent"></div>
+  </div>
+
   return <div className="pt-5">
     {project?.project?.logo ? <div className="flex items-center gap-2 mb-5">
       <img src={project?.project?.logo} alt="" className="w-10 h-10 border rounded-full"/>
@@ -145,7 +152,10 @@ const Page = () => {
                 {page?.node?.thumbnail ? <img alt={page?.node?.name} src={page?.node?.thumbnail} className="w-full h-full object-cover"/>:
                 <div className="h-full w-full flex justify-center items-center text-gray-600"><ImageIcon/></div>}
               </div>
-              <h5 className="p-3 text-sm  text-gray-600">{page?.node?.name}</h5>
+              <div className="p-3">
+                <h5 className=" text-sm  text-gray-600">{page?.node?.name}</h5>
+                <p className={`inline-block rounded-full text-[9px] border px-2 ${page?.node?.published ? "text-orange-500" : "text-gray-400"}`}>{page?.node?.published ? "Published" : "Draft"}</p>
+              </div>
             </div>
           </Link>
       )):

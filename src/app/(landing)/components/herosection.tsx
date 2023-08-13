@@ -25,7 +25,7 @@ const Herosection = async () => {
                 </div>
 
             </div>
-            <div className="sm:w-1/3"><LottiePlayer src="https://lottie.host/98ebbc55-2349-44e7-b629-fbb666983266/QvBTU9xcKX.json" height={400} width={400} /></div>
+            <div className="w-full overflow-hidden flex items-center justify-center sm:w-1/3"><LottiePlayer src="https://lottie.host/98ebbc55-2349-44e7-b629-fbb666983266/QvBTU9xcKX.json" height={300} width={300} /></div>
         </div>
     )
 }

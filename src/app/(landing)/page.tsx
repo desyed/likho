@@ -6,7 +6,7 @@ import Technologies from "@/app/(landing)/components/Technologies";
 import {headers} from "next/headers";
 
 export default function Home() {
-    console.log(headers().get('host'))
+    // console.log(headers().get('host'))
   return (
     <div className="flex min-h-screen flex-col items-center justify-center ">
         {/*  hero section*/}

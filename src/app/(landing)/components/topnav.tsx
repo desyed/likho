@@ -18,9 +18,9 @@ const Navbar = async () => {
 
 
     return (
-        <nav className='justify-between flex items-center px-10 py-5'>
-            <div className="container flex justify-between mx-auto">
-                <div className='flex-1 flexStart gap-10'>
+        <nav className='justify-between flex items-center container py-5'>
+            <div className="flex justify-between w-full mx-auto">
+                <div className=''>
                     <Link href='/'>
                         <Image
                             src='/likho.svg'

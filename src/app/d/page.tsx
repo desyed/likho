@@ -36,7 +36,8 @@ export default function SiteHomePage() {
                     window.location.href = "https://likho.site"
                 }
                 // @ts-ignore
-                res && setData(res?.subdomain?.project?.posts?.edges || []);
+                const resData = res && (res?.subdomain?.project?.posts?.edges || []).filter(item => item?.node?.published);
+                setData(resData || []);
                 setLoading(false);
             }catch (e){
                 window.location.href = "https://likho.site"
@@ -74,7 +75,7 @@ export default function SiteHomePage() {
                         </div>
                     </div>
                     {/* featured blog / more recent one */}
-                    {data.length > 0 && (<Link href={`/${data[0]?.node?.slug}`}>
+                    {data.length > 0 ? (<Link href={`/${data[0]?.node?.slug}`}>
                             <div className="">
                                 <img className="h-[300px] inline-block object-cover rounded-2xl border w-full"
                                      src={data[0]?.node?.thumbnail ? data[0]?.node?.thumbnail : "/thumb-placeholder2.png"}
@@ -84,7 +85,10 @@ export default function SiteHomePage() {
                                 </div>
                             </div>
                         </Link>
-                    )}
+                    ): (
+                        <div className="flex items-center justify-center h-[80vh]">
+                            <p>No article found!</p>
+                        </div>)}
                 </div>
             </div>
         </div>

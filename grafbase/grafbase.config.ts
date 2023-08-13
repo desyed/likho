@@ -22,7 +22,7 @@ const post = g.model('Post', {
   thumbnail: g.url().optional(),
   content: g.string().optional(),
   type: g.enumRef(postTypeEnum).default('page'),
-  published: g.boolean().default(true),
+  published: g.boolean().default(false),
   // comments: g.relation(() => comment).optional().list().optional(),
   createdBy: g.relation(() => user).optional(),
   project: g.relation(() => project).optional()

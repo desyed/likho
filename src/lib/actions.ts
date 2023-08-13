@@ -51,7 +51,6 @@ export const fetchToken = async () => {
 
 
 export const uploadImage = async (imagePath: string) => {
-    console.log("uploadImage", imagePath)
     try {
         const response = await fetch(`${serverUrl}/api/upload`, {
             method: "POST",

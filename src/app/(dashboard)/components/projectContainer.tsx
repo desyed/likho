@@ -2,6 +2,8 @@ import Image from "next/image";
 import {MoreVertical, Sun} from "lucide-react";
 import {getCurrentUser} from "@/lib/session";
 import { headers } from "next/headers";
+import {redirect} from "next/navigation";
+import Link from "next/link";
 
 
 const ProjectContainer = async ({ children }: { children: React.ReactNode }) => {
@@ -29,7 +31,8 @@ const ProjectContainer = async ({ children }: { children: React.ReactNode }) => 
                         priority
                     />}
                     {session?.user?.name}</p>
-                <MoreVertical width={15} className="text-stone-400"/>
+                {/*<MoreVertical width={15} className="text-stone-400"/>*/}
+                <Link href={'/api/auth/signout'} className="bg-black hover:bg-gray-600 px-3 rounded text-xs text-white cursor-pointer">logout</Link>
             </div>
         </div>
         <div className="p-5 pt-0">

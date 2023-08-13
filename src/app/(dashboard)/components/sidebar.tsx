@@ -14,7 +14,7 @@ import Link from "next/link";
 import { useEffect, useState} from "react";
 import {createNewProject, fetchToken, getUserProjects} from "@/lib/actions";
 import {toast} from "sonner";
-import {useParams} from "next/navigation";
+import {useParams, useRouter} from "next/navigation";
 import {setItem, setToken} from "@/lib/services/storage";
 import ProjectModal from "@/app/(dashboard)/components/project-create-modal";
 
@@ -24,6 +24,7 @@ const Sidebar = () => {
     const [projectCreateLoading, setProjectCreateLoading] = useState(false);
     const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
     const [logo, setLogoUrl] = useState<string | null>();
+    const router = useRouter();
 
     const {project: projectCode} = useParams()
     const closeProjectModal = () => {
@@ -57,11 +58,14 @@ const Sidebar = () => {
             setProjectFromError(false);
             try {
                 // @ts-ignore
-                tokenInfo &&  await createNewProject({name, logo}, tokenInfo?.id, tokenInfo?.token );
+                const res = tokenInfo &&  await createNewProject({name, logo}, tokenInfo?.id, tokenInfo?.token );
                 setProjectCreateLoading(false);
                 setIsProjectModalOpen(false);
                 toast.success("Project created successfully");
-                getPageInfo();
+                // @ts-ignore
+                console.log(res);
+                // @ts-ignore
+                res && router.push(`/playground/${res?.projectCreate?.project?.code}`);
             }
             catch (e) {
                 setProjectCreateLoading(false);
@@ -109,21 +113,21 @@ const Sidebar = () => {
                 <PlusCircle width={15}/><b>Create Project</b>
             </p>
 
-            {projectCode && (<>
+            {/*{projectCode && (<>*/}
 
-                <hr className="my-3"/>
+            {/*    <hr className="my-3"/>*/}
 
-                <h4 className="flex gap-2 text-gray-400 text-xs items-center mb-1">
-                    <ActivitySquare width={15}/><b>POSTS</b>
-                </h4>
+            {/*    <h4 className="flex gap-2 text-gray-400 text-xs items-center mb-1">*/}
+            {/*        <ActivitySquare width={15}/><b>POSTS</b>*/}
+            {/*    </h4>*/}
 
-                {posts && posts.map(({node: { name, slug, id}}: any) => <Link href={`/playground/${projectCode}/${slug}`} key={id}>
-                    <p className={`flex gap-2 font-light text-sm items-center hover:text-black ${slug === 'home' ?"text-black border-amber-500 border-r-2" : "text-gray-600"}`}>
-                        <FileSignature width={15}/><b>{name}</b>
-                    </p>
-                </Link>)}
+            {/*    {posts && posts.map(({node: { name, slug, id}}: any) => <Link href={`/playground/${projectCode}/${slug}`} key={id}>*/}
+            {/*        <p className={`flex gap-2 font-light text-sm items-center hover:text-black ${slug === 'home' ?"text-black border-amber-500 border-r-2" : "text-gray-600"}`}>*/}
+            {/*            <FileSignature width={15}/><b>{name}</b>*/}
+            {/*        </p>*/}
+            {/*    </Link>)}*/}
 
-            </>)}
+            {/*</>)}*/}
 
             <hr className="my-3"/>
             <h4 className="flex gap-2 text-gray-400 text-xs items-center mb-1">
