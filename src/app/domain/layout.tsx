@@ -5,6 +5,7 @@ import { Inter } from 'next/font/google'
 import { ReactNode } from "react";
 import { Metadata } from "next";
 import {notFound} from "next/navigation";
+import Script from "next/script";
 const inter = Inter({ subsets: ['latin'] })
 
 
@@ -54,6 +55,16 @@ export default async function SiteLayout({
 
   return (
       <html lang="en">
+      <Script src="https://www.googletagmanager.com/gtag/js?id=G-P58PZDHF3Q"></Script>
+      <Script id="google-analytics">
+        {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            
+            gtag('config', 'G-P58PZDHF3Q');
+        `}
+      </Script>
       <body className={`${inter.className} `}>
         <div>{children}</div>
       </body>

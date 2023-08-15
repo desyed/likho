@@ -5,6 +5,7 @@ import Topnav from "@/app/(landing)/components/topnav";
 import {headers} from "next/headers";
 import {isSubdomain} from "@/lib/utils";
 import {redirect} from "next/navigation";
+import Script from "next/script";
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -26,6 +27,16 @@ export default async function RootLayout({
     }
   return (
     <html lang="en">
+    <Script src="https://www.googletagmanager.com/gtag/js?id=G-P58PZDHF3Q"></Script>
+    <Script id="google-analytics">
+        {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            
+            gtag('config', 'G-P58PZDHF3Q');
+        `}
+    </Script>
       <body className={`${inter.className} bg-cover bg-bottom bg-[url('/bg-post.jpg')] bg-no-repeat`}>
           <Topnav />
           {children}
