@@ -3,6 +3,9 @@ import Image from "next/image";
 
 const Technologies = () => {
     return (<div className="container mx-auto mt-20 mb-20">
+        <div className="flex justify-center pb-10">
+            <iframe className="max-w-full" width="530" height="295" src="https://www.youtube.com/embed/EH4mOMF_FxY" title="LIKHO - Multi-tenant Blogging  Platform" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen></iframe>
+        </div>
         <div className="text-center">
             <h2 className=" font-extrabold  leading-[1.2em]  text-3xl   uppercase  z-10">Built with 🔥 Technologies</h2>
             <div className="flex justify-center items-center gap-5 mt-14">

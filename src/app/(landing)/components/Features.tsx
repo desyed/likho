@@ -3,6 +3,7 @@ import {Bot, Newspaper} from "lucide-react";
 const Features = () => {
     return (
         <div className="container mx-auto mt-20 mb-20">
+
             <div className="text-center">
                     <h2 className=" font-extrabold  leading-[1.2em]  text-3xl   tracking-[0.em] uppercase  z-10">What You&apos;ll Get</h2>
                     <p className="mx-auto md:w-1/2 text-md text-gray-600 mt-5 leading-0.5">Our platform is designed to help you create and maintain your website with ease. We offer a wide range of features that will help you create a website that is both beautiful and functional.</p>
